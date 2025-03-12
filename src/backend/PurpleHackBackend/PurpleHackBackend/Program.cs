@@ -75,7 +75,7 @@ builder.Services.AddScoped<GenericRepository<User>>();
 #region JwtAuth
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings["SecretKey"];
+var secretKey = jwtSettings["SecretKey"] ?? throw new SystemException("JwtSettings:SecretKey not found");
 
 var key = Encoding.ASCII.GetBytes(secretKey);
 builder.Services.AddAuthentication(x =>

@@ -24,7 +24,7 @@ public static class ChangeTrackerExtensions
         {
             DateTimeOffset timestamp = DateTimeOffset.UtcNow;
 
-            string user = currentUserService.GetCurrentUser().Login;
+            string user = currentUserService.GetCurrentUser().Login ?? "Unknown";
 
             foreach (EntityEntry entry in entities)
             {
