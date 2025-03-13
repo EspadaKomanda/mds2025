@@ -7,6 +7,7 @@ public class UnitOfWork : IDisposable
 {
     private ApplicationContext _context;
     private GenericRepository<User> _userRepository;
+    private GenericRepository<UserProfile> _userProfileRepository;
     private GenericRepository<Role> _roleRepository;
     private IDbContextTransaction _transaction;
     
@@ -24,6 +25,18 @@ public class UnitOfWork : IDisposable
                 this._userRepository = new GenericRepository<User>(_context);
             }
             return _userRepository;
+        }
+    }
+
+    public GenericRepository<UserProfile> ProfileRepository
+    {
+        get
+        {
+            if (this._userProfileRepository == null)
+            {
+                this._userProfileRepository = new GenericRepository<UserProfile>(_context);
+            }
+            return _userProfileRepository;
         }
     }
 
