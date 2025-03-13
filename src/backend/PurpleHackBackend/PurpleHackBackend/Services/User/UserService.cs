@@ -56,7 +56,7 @@ public class UserService : IUserService
     /// <param name="username">The username of the user to retrieve.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the UserDTO.</returns>
     /// <exception cref="UserNotFoundException">Thrown when the user with the specified username is not found.</exception>
-    public async Task<UserDTO> GetUserByUsername(string username)
+    public UserDTO GetUserByUsername(string username)
     {
         try
         {
@@ -108,7 +108,7 @@ public class UserService : IUserService
         try
         {
             _logger.LogDebug("Attempting to update user with ID {UserId}", user.Id);
-            var existingUser = await _unitOfWork.UserRepository.GetByIDAsync(user.Id);
+            var existingUser = await _unitOfWork.UserRepository.GetByIDAsync(user.Id ?? throw new ArgumentNullException(nameof(user.Id)));
             if (existingUser == null)
             {
                 _logger.LogWarning("User with ID {UserId} not found", user.Id);

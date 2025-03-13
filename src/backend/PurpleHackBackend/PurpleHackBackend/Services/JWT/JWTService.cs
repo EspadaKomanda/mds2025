@@ -19,7 +19,7 @@ public class JWTService : IJWTService
     }
     public async Task<string> GenerateJwtToken(UserDTO user)
     {
-        var secretKey = _configuration["JwtSettings:SecretKey"];
+        var secretKey = _configuration["JwtSettings:SecretKey"] ?? throw new SystemException("JwtSettings:SecretKey not found");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
     
@@ -27,6 +27,13 @@ public class JWTService : IJWTService
         {
             new Claim(ClaimTypes.Name, user.Username)
         };
+
+        if (user.Role == null)
+        {
+            _logger.LogError("User {Username} has no role", user.Username);
+            // TODO: custom exception
+            throw new  GenerateJWTTokenException("User has no role");
+        }
 
         claims.Add(new Claim(ClaimTypes.Role, user.Role.Name));
 
