@@ -65,10 +65,11 @@ builder.Services.AddDbContext<ApplicationContext>(x => {
     x.UseNpgsql($"Server={hostname}:{port};Database={name};Uid={username};Pwd={password};");
 });
 builder.Services.AddScoped<UnitOfWork>(sp => 
-    new UnitOfWork(sp.GetRequiredService<ApplicationContext>()));
+    new (sp.GetRequiredService<ApplicationContext>()));
 
 builder.Services.AddScoped<GenericRepository<Role>>();
 builder.Services.AddScoped<GenericRepository<User>>();
+builder.Services.AddScoped<GenericRepository<UserProfile>>();
 #endregion
 
 
