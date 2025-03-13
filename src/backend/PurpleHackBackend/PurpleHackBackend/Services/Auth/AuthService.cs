@@ -38,7 +38,7 @@ public class AuthService : IAuthService
         try
         {
             _logger.LogDebug("Attempting to login user {Username}", user.Username);
-            var existingUser = await _userService.GetUserByUsername(user.Username);
+            var existingUser = _userService.GetUserByUsername(user.Username);
             if (existingUser == null)
             {
                 _logger.LogWarning("User with username {Username} not found", user.Username);
@@ -82,7 +82,7 @@ public class AuthService : IAuthService
         try
         {
             _logger.LogDebug("Attempting to register user {Username}", user.Username);
-            var existingUser = await _userService.GetUserByUsername(user.Username);
+            var existingUser = _userService.GetUserByUsername(user.Username);
             if (existingUser != null)
             {
                 _logger.LogWarning("User with username {Username} already exists", user.Username);
