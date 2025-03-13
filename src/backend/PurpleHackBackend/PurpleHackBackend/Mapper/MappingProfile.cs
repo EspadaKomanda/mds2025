@@ -35,6 +35,29 @@ public class MappingProfile : Profile
         
         #endregion
 
+        #region  UserProfileMapping
+
+        CreateMap<UserProfile, UserProfileDTO>()
+            .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(x => x.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(x => x.Surname, opt => opt.MapFrom(src => src.Surname))
+            .ForMember(x => x.Patronymic, opt => opt.MapFrom(src => src.Patronymic))
+            .ForMember(x => x.Birthdate, opt => opt.MapFrom(src => src.Birthdate))
+            .ForMember(x => x.ContactEmail, opt => opt.MapFrom(src => src.ContactEmail))
+            .ForMember(x => x.ContactPhone, opt => opt.MapFrom(src => src.ContactPhone))
+            .ForMember(x => x.ProfilePicture, opt => opt.MapFrom(src => src.ProfilePicture));
+
+        CreateMap<UserProfileDTO, UserProfile>()
+            .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(x => x.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(x => x.Surname, opt => opt.MapFrom(src => src.Surname))
+            .ForMember(x => x.Patronymic, opt => opt.MapFrom(src => src.Patronymic))
+            .ForMember(x => x.Birthdate, opt => opt.MapFrom(src => src.Birthdate))
+            .ForMember(x => x.ContactEmail, opt => opt.MapFrom(src => src.ContactEmail))
+            .ForMember(x => x.ContactPhone, opt => opt.MapFrom(src => src.ContactPhone))
+            .ForMember(x => x.ProfilePicture, opt => opt.MapFrom(src => src.ProfilePicture));
+
+        #endregion
       
     }
 }
