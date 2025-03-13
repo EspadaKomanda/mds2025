@@ -534,3 +534,6 @@ obj/
 
 # End of https://www.toptal.com/developers/gitignore/api/aspnetcore,dotnetcore,csharp
 
+# Appsettings files (use appsettings.template.json and appsettings.Development.template.json instead)
+appsettings.json
+appsettings.Development.json
