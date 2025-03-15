@@ -1,7 +1,7 @@
 using PurpleHackBackend.Database.Extensions;
 using PurpleHackBackend.Models.Database;
 using Microsoft.EntityFrameworkCore;
-using PurpleHackBackend.Services.User;
+using PurpleHackBackend.Services.CurrentUserServiceNamespace;
 
 namespace PurpleHackBackend.Database;
 

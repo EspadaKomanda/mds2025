@@ -1,6 +1,6 @@
 using PurpleHackBackend.Models;
 
-namespace PurpleHackBackend.Services.User;
+namespace PurpleHackBackend.Services.CurrentUserServiceNamespace;
 
 public class CurrentUserService : ICurrentUserService
 {

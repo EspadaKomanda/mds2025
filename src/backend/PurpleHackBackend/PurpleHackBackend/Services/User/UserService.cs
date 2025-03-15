@@ -3,7 +3,7 @@ using PurpleHackBackend.Database.Repositories;
 using PurpleHackBackend.Exceptions.Services.User;
 using PurpleHackBackend.Models.DTO;
 
-namespace PurpleHackBackend.Services.User;
+namespace PurpleHackBackend.Services.UserServiceNamespace;
 
 public class UserService : IUserService
 {

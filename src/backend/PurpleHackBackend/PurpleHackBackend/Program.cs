@@ -9,7 +9,9 @@ using PurpleHackBackend.Mapper;
 using PurpleHackBackend.Services.Auth;
 using PurpleHackBackend.Services.Cookies;
 using PurpleHackBackend.Services.JWT;
-using PurpleHackBackend.Services.User;
+using PurpleHackBackend.Services.CurrentUserServiceNamespace;
+using PurpleHackBackend.Services.UserServiceNamespace;
+using PurpleHackBackend.Services.UserProfileServiceNamespace;
 using PurpleHackBackend.Models.Database;
 using Serilog;
 
@@ -47,6 +49,7 @@ builder.Host.UseSerilog();
 
 
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<ICookieService,CookieService>();
 

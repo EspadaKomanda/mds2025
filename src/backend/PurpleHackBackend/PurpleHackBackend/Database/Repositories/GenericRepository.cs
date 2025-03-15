@@ -42,11 +42,11 @@ public class GenericRepository<TEntity> where TEntity : class
         }
     }
 
-    public virtual TEntity GetByID(object id)
+    public virtual TEntity? GetByID(object id)
     {
         return dbSet.Find(id);
     }
-    public async virtual Task<TEntity> GetByIDAsync(object id)
+    public async virtual Task<TEntity?> GetByIDAsync(object id)
     {
         return await dbSet.FindAsync(id);
     }
@@ -60,7 +60,15 @@ public class GenericRepository<TEntity> where TEntity : class
     }
     public virtual void Delete(object id)
     {
-        TEntity entityToDelete = dbSet.Find(id);
+        TEntity? entityToDelete = dbSet.Find(id);
+
+        if (entityToDelete == null)
+        {
+            // It's probably a good idea to throw an error here
+            // but I'm leaving it as is for now
+            return;
+        }
+
         Delete(entityToDelete);
     }
 

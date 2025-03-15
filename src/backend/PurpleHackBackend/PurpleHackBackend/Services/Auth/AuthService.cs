@@ -4,7 +4,7 @@ using PurpleHackBackend.Exceptions.Services.User;
 using PurpleHackBackend.Models.DTO;
 using PurpleHackBackend.Services.Cookies;
 using PurpleHackBackend.Services.JWT;
-using PurpleHackBackend.Services.User;
+using PurpleHackBackend.Services.UserServiceNamespace;
 
 namespace PurpleHackBackend.Services.Auth;
 

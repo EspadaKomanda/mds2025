@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using PurpleHackBackend.Models.Database;
-using PurpleHackBackend.Services.User;
+using PurpleHackBackend.Services.CurrentUserServiceNamespace;
 
 namespace PurpleHackBackend.Database.Extensions;
 

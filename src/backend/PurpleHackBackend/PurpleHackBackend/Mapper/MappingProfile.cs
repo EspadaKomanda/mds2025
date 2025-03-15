@@ -39,6 +39,7 @@ public class MappingProfile : Profile
 
         CreateMap<UserProfile, UserProfileDTO>()
             .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(x => x.UserId, opt => opt.MapFrom(src => src.UserId))
             .ForMember(x => x.Name, opt => opt.MapFrom(src => src.Name))
             .ForMember(x => x.Surname, opt => opt.MapFrom(src => src.Surname))
             .ForMember(x => x.Patronymic, opt => opt.MapFrom(src => src.Patronymic))
@@ -49,6 +50,7 @@ public class MappingProfile : Profile
 
         CreateMap<UserProfileDTO, UserProfile>()
             .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(x => x.UserId, opt => opt.MapFrom(src => src.UserId))
             .ForMember(x => x.Name, opt => opt.MapFrom(src => src.Name))
             .ForMember(x => x.Surname, opt => opt.MapFrom(src => src.Surname))
             .ForMember(x => x.Patronymic, opt => opt.MapFrom(src => src.Patronymic))

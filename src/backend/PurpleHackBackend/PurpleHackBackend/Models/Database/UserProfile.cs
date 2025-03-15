@@ -6,12 +6,19 @@ public class UserProfile
 {
     [Key]
     public long Id { get; set; }
+
+    [Required(ErrorMessage = "User is required")]
+    public long UserId { get; set; }
+    public User? User { get; set; }
+
     [Required(ErrorMessage = "Name is required")]
     [StringLength(100, ErrorMessage = "Name must be less than 100 characters")]
     public string Name { get; set; } = null!;
+
     [Required(ErrorMessage = "Surname is required")]
     [StringLength(100, ErrorMessage = "Surname must be less than 100 characters")]
     public string Surname { get; set; } = null!;
+
     [StringLength(50, ErrorMessage = "Patronymic must be less than 50 characters")]
     public string? Patronymic { get; set; }
 

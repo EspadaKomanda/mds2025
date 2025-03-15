@@ -28,7 +28,7 @@ public class UnitOfWork : IDisposable
         }
     }
 
-    public GenericRepository<UserProfile> ProfileRepository
+    public GenericRepository<UserProfile> UserProfileRepository
     {
         get
         {

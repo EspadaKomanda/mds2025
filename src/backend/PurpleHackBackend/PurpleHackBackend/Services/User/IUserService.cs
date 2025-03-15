@@ -1,6 +1,6 @@
 using PurpleHackBackend.Models.DTO;
 
-namespace PurpleHackBackend.Services.User;
+namespace PurpleHackBackend.Services.UserServiceNamespace;
 
 public interface IUserService
 {
