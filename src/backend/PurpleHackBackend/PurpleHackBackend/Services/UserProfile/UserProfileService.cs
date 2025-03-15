@@ -33,6 +33,7 @@ private readonly UnitOfWork _unitOfWork;
         }
 
         await _unitOfWork.UserProfileRepository.InsertAsync(userProfileEntity);
+        _unitOfWork.Save();
         await _unitOfWork.CommitAsync();
 
         _logger.LogInformation("User profile added for user id: {UserId}", userProfile.UserId);

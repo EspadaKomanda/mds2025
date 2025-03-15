@@ -2,6 +2,7 @@ using AutoMapper;
 using PurpleHackBackend.Database.Repositories;
 using PurpleHackBackend.Exceptions.Services.User;
 using PurpleHackBackend.Models.DTO;
+using PurpleHackBackend.Models.Database;
 
 namespace PurpleHackBackend.Services.UserServiceNamespace;
 
@@ -17,9 +18,31 @@ public class UserService : IUserService
         _mapper = mapper;
     }
 
-    public Task<bool> AddUser(UserDTO user)
+    // TODO: this should return the user id instead (I think)
+    public async Task<bool> AddUser(UserDTO user)
     {
-        throw new NotImplementedException();
+        User UserEntity = _mapper.Map<User>(user);
+
+       await _unitOfWork.BeginTransactionAsync();
+
+        // Make sure a user with the given username does not exist yet
+        if (_unitOfWork.UserRepository.Get(x => x.Username == user.Username).Any())
+        {
+            _logger.LogWarning("A user already exists with the given username: {Username}", user.Username);
+            return false;
+        }
+
+        // Make sure a user with the given email does not exist yet
+        if (_unitOfWork.UserRepository.Get(x => x.Email == user.Email).Any())
+        {
+            _logger.LogWarning("A user already exists with the given email: {Email}", user.Email);
+            return false;
+        }
+
+        _unitOfWork.UserRepository.Insert(UserEntity);
+        _unitOfWork.Save();
+        await _unitOfWork.CommitAsync();
+        return true;
     }
 
     /// <summary>

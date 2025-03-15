@@ -47,9 +47,7 @@ builder.Host.UseSerilog();
 
 #region UtilServices
 
-
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<ICookieService,CookieService>();
 
@@ -106,6 +104,7 @@ builder.Services.AddAuthentication(x =>
 #region Services
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 #endregion
