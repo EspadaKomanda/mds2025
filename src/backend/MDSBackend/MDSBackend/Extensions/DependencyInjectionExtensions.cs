@@ -109,7 +109,7 @@ public static class UtilServicesExtensions
     public static IServiceCollection AddUtilServices(this IServiceCollection services)
     {
         services.AddScoped<ICurrentUserService, CurrentUserService>();
-        services.AddScoped<IJWTService, JWTService>();
+        services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<ICookieService, CookieService>();
         return services;
     }

@@ -1,59 +1,145 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
+using MDSBackend.Database.Repositories;
+using MDSBackend.Exceptions.Services.JwtService;
 using MDSBackend.Exceptions.UtilServices.JWT;
+using MDSBackend.Models.Database;
 using MDSBackend.Models.DTO;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MDSBackend.Services.JWT;
 
-public class JWTService : IJWTService
+public class JwtService : IJwtService
 {
-    private readonly IConfiguration _configuration;
-    private readonly ILogger<JWTService> _logger;
+    #region Fields
 
-    public JWTService(IConfiguration configuration, ILogger<JWTService> logger)
+    private readonly IConfiguration _configuration;
+    private readonly ILogger<JwtService> _logger;
+    private readonly UnitOfWork _unitOfWork;
+    
+    #endregion
+   
+
+    public JwtService(IConfiguration configuration, ILogger<JwtService> logger, UnitOfWork unitOfWork)
     {
         _configuration = configuration;
         _logger = logger;
+        _unitOfWork = unitOfWork;
     }
-    public async Task<string> GenerateJwtToken(UserDTO user)
+
+    public string GenerateAccessToken(ApplicationUser user)
     {
-        var secretKey = _configuration["JwtSettings:SecretKey"] ?? throw new SystemException("JwtSettings:SecretKey not found");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-    
+        var jwtSettings = _configuration.GetSection("JwtSettings");
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
+        var issuer = jwtSettings["Issuer"];
+        var audience = jwtSettings["Audience"];
+        
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, user.Username)
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+        
+        var userRoles = _unitOfWork.UserRoleRepository.Get()
+            .Where(ur => ur.UserId == user.Id)
+            .Select(ur => ur.Role)
+            .Include(rr => rr.RoleRights)
+            .ThenInclude(rr=>rr.Right)
+            .ToList();
+        
+        foreach (var role in userRoles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role.Name));
+            
+            foreach (var right in role.RoleRights.Select(rr => rr.Right))
+            {
+                claims.Add(new Claim("Right", right.Name));
+            }
+        }
+
+        var expires = DateTime.UtcNow.AddMinutes(double.Parse(jwtSettings["AccessTokenExpirationMinutes"]));
+
+        var token = new JwtSecurityToken(
+            issuer: issuer,
+            audience: audience,
+            claims: claims,
+            expires: expires,
+            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    private string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[32];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
+    }
+
+    public JwtSecurityToken ValidateAccessToken(string token)
+    {
+        var jwtSettings = _configuration.GetSection("JwtSettings");
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
+        var issuer = jwtSettings["Issuer"];
+        var audience = jwtSettings["Audience"];
+        
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var validationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = key,
+            ValidateIssuer = true,
+            ValidIssuer = issuer,
+            ValidateAudience = true,
+            ValidAudience = audience,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
         };
 
-        if (user.Role == null)
+        SecurityToken validatedToken;
+        var principal = tokenHandler.ValidateToken(token, validationParameters, out validatedToken);
+        
+        return validatedToken as JwtSecurityToken;
+    }
+
+    public async Task<RefreshToken> GenerateRefreshTokenAsync(ApplicationUser user,  string remoteIpAddress)
+    {
+        var dbRefreshToken = new RefreshToken
         {
-            _logger.LogError("User {Username} has no role", user.Username);
-            // TODO: custom exception
-            throw new  GenerateJWTTokenException("User has no role");
+            UserId = user.Id,
+            Token = GenerateRefreshToken(),
+            Expires = DateTime.UtcNow.AddDays(double.Parse(_configuration["JwtSettings:RefreshTokenExpirationDays"])),
+            Created = DateTime.UtcNow,
+            RevokedByIp = remoteIpAddress
+        };
+
+        await _unitOfWork.RefreshTokenRepository.InsertAsync(dbRefreshToken);
+        if (!await _unitOfWork.SaveAsync())
+        {   
+            throw new GenerateRefreshTokenException("Failed to generate refresh token");
         }
 
-        claims.Add(new Claim(ClaimTypes.Role, user.Role.Name));
+        return dbRefreshToken;
+    }
 
-        try
+    public async Task RevokeRefreshTokenAsync(long userId, string refreshToken, string remoteIpAddress)
+    {
+        var token = await _unitOfWork.RefreshTokenRepository.Get()
+            .FirstOrDefaultAsync(x => x.UserId == userId && x.Token == refreshToken);
+
+        if (token != null)
         {
-            var token = new JwtSecurityToken(
-                issuer: _configuration["JwtSettings:Issuer"],
-                audience: _configuration["JwtSettings:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["JwtSettings:TokenLifetime"])),
-                signingCredentials: creds);
-
-            _logger.LogDebug("Generated JWT token for user {Username}", user.Username);
-
-            return await Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error generating JWT token for user {Username}", user.Username);
-            throw new GenerateJWTTokenException(ex.Message);
+            token.IsRevoked = true;
+            token.RevokedByIp = remoteIpAddress;
+            token.RevokedOn = DateTime.UtcNow;
+            
+            await _unitOfWork.SaveAsync();
         }
     }
 }

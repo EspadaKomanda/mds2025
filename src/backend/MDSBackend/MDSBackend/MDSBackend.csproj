@@ -32,8 +32,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
-      <Folder Include="Services\" />
+      <Folder Include="Services\TwoFactorAuthentificationService\" />
     </ItemGroup>
 
 </Project>

@@ -107,11 +107,17 @@ public class UnitOfWork : IDisposable
 
     
 
-    public void Save()
+    public bool Save()
     {
-        _context.SaveChanges();
+       return _context.SaveChanges() > 0;
     }
 
+    public async Task<bool> SaveAsync()
+    {
+       return await _context.SaveChangesAsync() > 0;
+    }
+
+    
     private bool disposed = false;
 
     protected virtual void Dispose(bool disposing)
