@@ -4,7 +4,7 @@ using MDSBackend.Exceptions.Services.User;
 using MDSBackend.Models.DTO;
 using MDSBackend.Services.Cookies;
 using MDSBackend.Services.JWT;
-using MDSBackend.Services.UserServiceNamespace;
+using MDSBackend.Services.Users;
 
 namespace MDSBackend.Services.Auth;
 

@@ -1,5 +1,5 @@
 using MDSBackend.Models.Database;
-using MDSBackend.Services.CurrentUserServiceNamespace;
+using MDSBackend.Services.CurrentUsers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 

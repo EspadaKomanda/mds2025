@@ -1,6 +1,6 @@
 using MDSBackend.Models.DTO;
 
-namespace MDSBackend.Services.UserServiceNamespace;
+namespace MDSBackend.Services.Users;
 
 public interface IUserService
 {

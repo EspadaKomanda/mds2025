@@ -4,7 +4,7 @@ using MDSBackend.Exceptions.Services.User;
 using MDSBackend.Models.Database;
 using MDSBackend.Models.DTO;
 
-namespace MDSBackend.Services.UserServiceNamespace;
+namespace MDSBackend.Services.Users;
 
 public class UserService : IUserService
 {

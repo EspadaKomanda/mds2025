@@ -1,6 +1,6 @@
 using MDSBackend.Models;
 
-namespace MDSBackend.Services.CurrentUserServiceNamespace;
+namespace MDSBackend.Services.CurrentUsers;
 
 public interface ICurrentUserService
 {

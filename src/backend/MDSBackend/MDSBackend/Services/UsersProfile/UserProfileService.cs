@@ -3,7 +3,7 @@ using MDSBackend.Database.Repositories;
 using MDSBackend.Models.Database;
 using MDSBackend.Models.DTO;
 
-namespace MDSBackend.Services.UserProfileServiceNamespace;
+namespace MDSBackend.Services.UsersProfile;
 
 public class UserProfileService : IUserProfileService
 {

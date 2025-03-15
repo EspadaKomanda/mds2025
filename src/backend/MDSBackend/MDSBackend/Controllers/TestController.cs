@@ -1,5 +1,5 @@
 using MDSBackend.Models.DTO;
-using MDSBackend.Services.UserServiceNamespace;
+using MDSBackend.Services.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MDSBackend.Controllers

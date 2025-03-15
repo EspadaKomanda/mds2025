@@ -9,10 +9,10 @@ using MDSBackend.Mapper;
 using MDSBackend.Services.Auth;
 using MDSBackend.Services.Cookies;
 using MDSBackend.Services.JWT;
-using MDSBackend.Services.CurrentUserServiceNamespace;
-using MDSBackend.Services.UserServiceNamespace;
-using MDSBackend.Services.UserProfileServiceNamespace;
+using MDSBackend.Services.CurrentUsers;
+using MDSBackend.Services.UsersProfile;
 using MDSBackend.Models.Database;
+using MDSBackend.Services.Users;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
