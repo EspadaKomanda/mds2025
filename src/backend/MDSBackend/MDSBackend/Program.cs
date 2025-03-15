@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MDSBackend.Database;
 using MDSBackend.Database.Repositories;
+using MDSBackend.Extensions;
 using MDSBackend.Logs;
 using MDSBackend.Mapper;
 using MDSBackend.Services.Auth;
@@ -21,91 +22,48 @@ builder.Services.AddHttpContextAccessor();
 
 #region Mapping
 
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddMapping();
 
 #endregion
 
 
 #region Caching
 
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration["Redis:ConnectionString"] ?? "localhost:6379";
-    options.InstanceName = builder.Configuration["Redis:InstanceName"] ?? "default";
-});
+builder.Services.AddRedisCaching(builder.Configuration);
 
 #endregion
 
 
 #region Logging
 
-LoggingConfigurator.ConfigureLogging();
-builder.Host.UseSerilog();
+builder.Services.AddLogging();
 
 #endregion
 
-
 #region UtilServices
 
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddScoped<IJWTService, JWTService>();
-builder.Services.AddScoped<ICookieService,CookieService>();
+builder.Services.AddUtilServices();
 
 #endregion
 
 
 #region Database
 
-builder.Services.AddDbContext<ApplicationContext>(x => {
-    var dbSettings = builder.Configuration.GetSection("DatabaseSettings");
-    var hostname = dbSettings["Hostname"] ?? "localhost";
-    var port = dbSettings["Port"] ?? "5432";
-    var name = dbSettings["Name"] ?? "postgres";
-    var username = dbSettings["Username"] ?? "postgres";
-    var password = dbSettings["Password"] ?? "postgres";
-    x.UseNpgsql($"Server={hostname}:{port};Database={name};Uid={username};Pwd={password};");
-});
-builder.Services.AddScoped<UnitOfWork>(sp => 
-    new (sp.GetRequiredService<ApplicationContext>()));
+builder.Services.AddDatabase(builder.Configuration);
 
-builder.Services.AddScoped<GenericRepository<Role>>();
-builder.Services.AddScoped<GenericRepository<User>>();
-builder.Services.AddScoped<GenericRepository<UserProfile>>();
 #endregion
 
 
 #region JwtAuth
 
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings["SecretKey"] ?? throw new SystemException("JwtSettings:SecretKey not found");
-
-var key = Encoding.ASCII.GetBytes(secretKey);
-builder.Services.AddAuthentication(x =>
-    {
-        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(x =>
-    {
-        x.RequireHttpsMetadata = false; 
-        x.SaveToken = true;
-        x.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateIssuer = false,
-            ValidateAudience = false
-        };
-    });
+builder.Services.AddJwtAuth(builder.Configuration);
 
 #endregion
 
 
 #region Services
 
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserProfileService, UserProfileService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddBackendServices();
 
 #endregion
 
