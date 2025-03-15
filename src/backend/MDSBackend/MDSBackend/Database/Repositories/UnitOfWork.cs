@@ -5,28 +5,28 @@ namespace MDSBackend.Database.Repositories;
 
 public class UnitOfWork : IDisposable
 {
+    #region  fields
+    
     private ApplicationContext _context;
-    private GenericRepository<User> _userRepository;
     private GenericRepository<UserProfile> _userProfileRepository;
-    private GenericRepository<Role> _roleRepository;
+    private GenericRepository<ApplicationRole> _roleRepository;
+    private GenericRepository<Right> _rightRepository;
+    private GenericRepository<RefreshToken> _refreshTokenRepository;
+    private GenericRepository<RoleRight> _roleRightRepository;
+    private GenericRepository<UserRole> _userRoleRepository;
+    
+    #endregion
+    
+    
     private IDbContextTransaction _transaction;
     
     public UnitOfWork(ApplicationContext context)
     {
         _context = context;
     }
-    
-    public GenericRepository<User> UserRepository
-    {
-        get
-        {
-            if (this._userRepository == null)
-            {
-                this._userRepository = new GenericRepository<User>(_context);
-            }
-            return _userRepository;
-        }
-    }
+
+
+    #region Properties
 
     public GenericRepository<UserProfile> UserProfileRepository
     {
@@ -39,18 +39,72 @@ public class UnitOfWork : IDisposable
             return _userProfileRepository;
         }
     }
-
-    public GenericRepository<Role> RoleRepository
+    
+    public GenericRepository<ApplicationRole> RoleRepository
     {
         get
         {
             if (this._roleRepository == null)
             {
-                this._roleRepository = new GenericRepository<Role>(_context);
+                this._roleRepository = new GenericRepository<ApplicationRole>(_context);
             }
             return _roleRepository;
         }
     }
+    
+    public GenericRepository<Right> RightRepository
+    {
+        get
+        {
+            if (this._rightRepository == null)
+            {
+                this._rightRepository = new GenericRepository<Right>(_context);
+            }
+            return _rightRepository;
+        }
+    }
+    
+    public GenericRepository<RefreshToken> RefreshTokenRepository
+    {
+        get
+        {
+            if (this._refreshTokenRepository == null)
+            {
+                this._refreshTokenRepository = new GenericRepository<RefreshToken>(_context);
+            }
+            return _refreshTokenRepository;
+        }
+    }
+    
+    public GenericRepository<RoleRight> RoleRightRepository
+    {
+        get
+        {
+            if (this._roleRightRepository == null)
+            {
+                this._roleRightRepository = new GenericRepository<RoleRight>(_context);
+            }
+            return _roleRightRepository;
+        }
+    }
+    
+    public GenericRepository<UserRole> UserRoleRepository
+    {
+        get
+        {
+            if (this._userRoleRepository == null)
+            {
+                this._userRoleRepository = new GenericRepository<UserRole>(_context);
+            }
+            return _userRoleRepository;
+        }
+    }
+    
+    
+
+    #endregion
+ 
+
     
 
     public void Save()

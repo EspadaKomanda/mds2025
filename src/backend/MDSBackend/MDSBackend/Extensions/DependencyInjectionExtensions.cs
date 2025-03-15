@@ -3,11 +3,9 @@ using MDSBackend.Database;
 using MDSBackend.Database.Repositories;
 using MDSBackend.Logs;
 using MDSBackend.Mapper;
-using MDSBackend.Services.Auth;
 using MDSBackend.Services.Cookies;
 using MDSBackend.Services.CurrentUsers;
 using MDSBackend.Services.JWT;
-using MDSBackend.Services.Users;
 using MDSBackend.Services.UsersProfile;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -101,9 +99,7 @@ public static class BackendServicesExtensions
 {
     public static IServiceCollection AddBackendServices(this IServiceCollection services)
     {
-        services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserProfileService, UserProfileService>();
-        services.AddScoped<IAuthService, AuthService>();
         return services;
     }
 }

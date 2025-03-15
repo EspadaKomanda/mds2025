@@ -9,7 +9,7 @@ public class UserProfile
 
     [Required(ErrorMessage = "User is required")]
     public long UserId { get; set; }
-    public User? User { get; set; }
+    public ApplicationUser? User { get; set; }
 
     [Required(ErrorMessage = "Name is required")]
     [StringLength(100, ErrorMessage = "Name must be less than 100 characters")]
