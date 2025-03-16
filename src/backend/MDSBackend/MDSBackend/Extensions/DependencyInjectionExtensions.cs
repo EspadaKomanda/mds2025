@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using MDSBackend.Database;
 using MDSBackend.Database.Repositories;
@@ -111,6 +113,27 @@ public static class UtilServicesExtensions
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<ICookieService, CookieService>();
+        return services;
+    }
+}
+
+public static class EmailExtensions
+{
+    public static IServiceCollection AddEmail(this IServiceCollection services, IConfiguration configuration)
+    {
+        var smtpSettings = configuration.GetSection("EmailSettings");
+        var host = smtpSettings["Host"] ?? "localhost";
+        var port = Convert.ToInt32(smtpSettings["Port"] ?? "25");
+        var username = smtpSettings["Username"] ?? "username";
+        var password = smtpSettings["Password"] ?? "password";
+        var email = smtpSettings["EmailFrom"] ?? "email";
+        services.AddScoped<SmtpClient>(sp => new SmtpClient(host)
+        {
+            Port = port,
+            Credentials = new NetworkCredential(username, password),
+            EnableSsl = true,
+        });
+        
         return services;
     }
 }

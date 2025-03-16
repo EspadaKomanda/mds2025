@@ -30,6 +30,11 @@ builder.Services.AddUtilServices();
 
 #endregion
 
+#region SMTP
+
+builder.Services.AddSMTP(builder.Configuration);
+
+#endregion
 
 #region Database
 
