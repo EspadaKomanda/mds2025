@@ -118,6 +118,28 @@ public static class UtilServicesExtensions
     }
 }
 
+public static class NotificationSettings
+{
+    public static IServiceCollection AddPushNotifications(this IServiceCollection services, IConfiguration configuration)
+    {
+        var notificationSettings = configuration.GetSection("NotificationSettings");
+        var apiKey = notificationSettings["ApiKey"];
+        var token = notificationSettings["Token"];
+        var baseUrl = notificationSettings["Url"];
+        var projectId = notificationSettings["ProjectId"];
+        
+        HttpClient client = new HttpClient();
+        client.BaseAddress = new Uri(baseUrl);
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+
+        services.AddSingleton(provider =>
+        {
+            var logger = provider.GetRequiredService<ILogger<PushNotificationsClient>>();
+            return new PushNotificationsClient(client, logger, token, projectId);
+        });
+        return services;
+    }
+}
 public static class EmailExtensions
 {
     public static IServiceCollection AddEmail(this IServiceCollection services, IConfiguration configuration)

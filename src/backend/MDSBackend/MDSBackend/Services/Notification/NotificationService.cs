@@ -10,15 +10,18 @@ public class NotificationService : INotificationService
 
     private readonly EmailClient _emailClient;
     private readonly NotificationsFactory _notificationsFactory;
-
+    private readonly ILogger<NotificationService> _logger;
+    private readonly PushNotificationsClient _pushNotificationsClient;
     #endregion
 
     #region Constructor
 
-    public NotificationService(EmailClient emailClient, NotificationsFactory notificationsFactory)
+    public NotificationService(EmailClient emailClient, NotificationsFactory notificationsFactory, PushNotificationsClient pushNotificationsClient, ILogger<NotificationService> logger)
     {
         _emailClient = emailClient;
         _notificationsFactory = notificationsFactory;
+        _pushNotificationsClient = pushNotificationsClient;
+        _logger = logger;
     }
 
     #endregion
@@ -37,6 +40,8 @@ public class NotificationService : INotificationService
         switch(type)
         {
             case NotificationType.PUSH:
+                var pushNotification = _notificationsFactory.CreateNotification(notificationInformationType, type, title, message);
+                await _pushNotificationsClient.SendPushNotification((PushNotification)pushNotification);
                 break;
             case NotificationType.EMAIL:
                 var notification = _notificationsFactory.CreateNotification(notificationInformationType, type, title, message);
@@ -46,8 +51,22 @@ public class NotificationService : INotificationService
                 break;
         }
     }
-
+    //TODO: Implement   
     public async Task SendNotificationAsync(ApplicationUser user, string title, string message, NotificationInformationType notificationInformationType,NotificationType type, List<Attachment> attachments)
+    {
+        throw new NotImplementedException();
+    }
+
+    //TODO: Implement   
+    public Task SendNotificationAsync(ApplicationUser user, string title, string message,
+        NotificationInformationType notificationInformationType, NotificationType type, string topic)
+    {
+        throw new NotImplementedException();
+    }
+
+    //TODO: Implement   
+    public Task SendNotificationAsync(ApplicationUser user, string title, string message,
+        NotificationInformationType notificationInformationType, NotificationType type, string topic, string image)
     {
         throw new NotImplementedException();
     }

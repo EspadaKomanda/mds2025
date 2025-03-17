@@ -3,22 +3,12 @@ using MDSBackend.Exceptions.UtilServices.Email;
 
 namespace MDSBackend.Utils;
 
-public class EmailClient
+public class EmailClient(SmtpClient smtpClient, string emailFrom, ILogger<EmailClient> logger)
 {
     #region Fields
 
-    private readonly SmtpClient _smtpClient;
-    private readonly string _emailFrom;
-
-    #endregion
-    
-    #region Constructor
-    
-    public EmailClient(SmtpClient smtpClient, string emailFrom)
-    {
-        _smtpClient = smtpClient;
-        _emailFrom = emailFrom;
-    }
+    private readonly string _emailFrom = emailFrom;
+    private readonly ILogger<EmailClient> _logger = logger;
     
     #endregion
     
@@ -35,10 +25,11 @@ public class EmailClient
         try
         {
             email.To.Add(new MailAddress(emailTo));
-            await _smtpClient.SendMailAsync(email);
+            await smtpClient.SendMailAsync(email);
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, ex.Message);
             throw new SendEmailException("Failed to send email", ex);
         }
     }

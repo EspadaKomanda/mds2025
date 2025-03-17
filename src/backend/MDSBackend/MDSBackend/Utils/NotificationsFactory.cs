@@ -37,5 +37,41 @@ public class NotificationsFactory
                 return new PushNotification(type, title, message);
         }
     }
+    //TODO: Implement
+    public Notification CreateNotification(NotificationInformationType type, 
+        NotificationType notificationType,
+        string title, 
+        string message,
+        string topic)
+    {
+        switch (notificationType)
+        {
+            case NotificationType.PUSH:
+                return new PushNotification(type, title, message);
+            case NotificationType.EMAIL:
+                throw new ArgumentException("Invalid Notification Type");
+            default:
+                return new PushNotification(type, title, message);
+        }
+    }
+    
+    //TODO: Implement
+    public Notification CreateNotification(NotificationInformationType type, 
+        NotificationType notificationType,
+        string title, 
+        string message,
+        string? topic,
+        string image)
+    {
+        switch (notificationType)
+        {
+            case NotificationType.PUSH:
+                return new PushNotification(type, title, message);
+            case NotificationType.EMAIL:
+                return new MailNotification(type, title, message);
+            default:
+                return new PushNotification(type, title, message);
+        }
+    }
     #endregion
 }
