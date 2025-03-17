@@ -9,6 +9,7 @@ using MDSBackend.Services.Cookies;
 using MDSBackend.Services.CurrentUsers;
 using MDSBackend.Services.JWT;
 using MDSBackend.Services.UsersProfile;
+using MDSBackend.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -133,7 +134,17 @@ public static class EmailExtensions
             Credentials = new NetworkCredential(username, password),
             EnableSsl = true,
         });
-        
+
+        services.AddSingleton<EmailClient>();
+        return services;
+    }
+}
+
+public static class FactoryExtensions
+{
+    public static IServiceCollection AddFactories(this IServiceCollection services)
+    {
+        services.AddSingleton<NotificationsFactory>();
         return services;
     }
 }

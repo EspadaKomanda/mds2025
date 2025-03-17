@@ -1,4 +1,5 @@
 using System.Net.Mail;
+using MDSBackend.Exceptions.UtilServices.Email;
 
 namespace MDSBackend.Utils;
 
@@ -11,25 +12,36 @@ public class EmailClient
 
     #endregion
     
+    #region Constructor
+    
     public EmailClient(SmtpClient smtpClient, string emailFrom)
     {
         _smtpClient = smtpClient;
         _emailFrom = emailFrom;
     }
     
-    public async Task SendEmail(MailMessage email)
-    { 
-        await  _smtpClient.SendMailAsync(email);
+    #endregion
+    
+    #region Methods
+    
+    /// <summary>
+    /// Sends the email using the SmtpClient instance.
+    /// </summary>
+    /// <param name="email">Email to send.</param>
+    /// <exception cref="SendEmailException">If the SmtpClient instance fails to send the email.</exception>
+    /// <returns>Task that represents the asynchronous operation.</returns>
+    public async Task SendEmail(MailMessage email, string emailTo)
+    {
+        try
+        {
+            email.To.Add(new MailAddress(emailTo));
+            await _smtpClient.SendMailAsync(email);
+        }
+        catch (Exception ex)
+        {
+            throw new SendEmailException("Failed to send email", ex);
+        }
     }
     
-    public MailMessage CreateEmail(string emailTo, string subject, string body)
-    {
-        var email = new MailMessage(_emailFrom, emailTo)
-        {
-            Subject = subject,
-            Body = body,
-            IsBodyHtml = true
-        };
-        return email;
-    }
+    #endregion
 }

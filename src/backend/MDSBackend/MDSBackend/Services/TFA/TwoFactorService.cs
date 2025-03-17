@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using MDSBackend.Models.Database;
+using MDSBackend.Utils;
 using Microsoft.Extensions.Options;
 using OtpNet;
 
@@ -10,13 +11,20 @@ public class TwoFactorService : ITwoFactorService
     #region Services
 
     private readonly ILogger<ITwoFactorService> _logger;
+    private readonly NotificationsFactory _notificationsFactory;
     
     #endregion
     
-    public TwoFactorService(ILogger<ITwoFactorService> logger)
+    #region Constructor
+    
+    public TwoFactorService(ILogger<ITwoFactorService> logger, 
+        NotificationsFactory notificationsFactory)
     {
         _logger = logger;
+        _notificationsFactory = notificationsFactory;
     }
+    
+    #endregion
     
     public string GenerateTwoFactorSecretKey(ApplicationUser user)
     {
@@ -41,7 +49,7 @@ public class TwoFactorService : ITwoFactorService
         return totp.VerifyTotp(code, out long _);
     }
 
-    public Task SendTwoFactorNotificationAsync(ApplicationUser user, string code)
+    public async Task SendTwoFactorNotificationAsync(ApplicationUser user, string code)
     {
         
     }
