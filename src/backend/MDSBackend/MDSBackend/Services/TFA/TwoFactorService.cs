@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using MDSBackend.Models.Database;
+using MDSBackend.Services.NotificationService;
 using MDSBackend.Utils;
 using Microsoft.Extensions.Options;
 using OtpNet;
@@ -11,17 +12,15 @@ public class TwoFactorService : ITwoFactorService
     #region Services
 
     private readonly ILogger<ITwoFactorService> _logger;
-    private readonly NotificationsFactory _notificationsFactory;
+    private readonly INotificationService _notificationService;
     
     #endregion
     
     #region Constructor
     
-    public TwoFactorService(ILogger<ITwoFactorService> logger, 
-        NotificationsFactory notificationsFactory)
+    public TwoFactorService(ILogger<ITwoFactorService> logger)
     {
         _logger = logger;
-        _notificationsFactory = notificationsFactory;
     }
     
     #endregion
@@ -51,7 +50,18 @@ public class TwoFactorService : ITwoFactorService
 
     public async Task SendTwoFactorNotificationAsync(ApplicationUser user, string code)
     {
-        
+        try
+        {
+            var message = $"Your verification code is: {code}";
+            var title = "Verification Code";
+            await _notificationService.SendMailNotificationAsync(user, message, title, NotificationInformationType.AUTH);
+            await _notificationService.SendPushNotificationAsync(user, message, title, NotificationInformationType.AUTH);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            throw;
+        }
     }
 
     public string GenerateTwoFactorCode(ApplicationUser user)

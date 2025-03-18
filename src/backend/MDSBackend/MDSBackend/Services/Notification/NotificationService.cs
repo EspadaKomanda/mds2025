@@ -29,49 +29,65 @@ public class NotificationService : INotificationService
     }
 
     #endregion
-    /// <summary>
-    /// Sends the given notification to the given user.
-    /// </summary>
-    /// <param name="user">The user to send the notification to.</param>
-    /// <param name="title">The title of the notification.</param>
-    /// <param name="message">The message of the notification.</param>
-    /// <param name="notificationInformationType">The information type of the notification.</param>
-    /// <param name="type">The type of the notification.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
-    public async Task SendNotificationAsync(ApplicationUser user, string title, string message, NotificationInformationType notificationInformationType,NotificationType type)
+
+
+    public async Task SendMailNotificationAsync(ApplicationUser user, string title, string message,
+        NotificationInformationType notificationInformationType)
     {
-        
-        switch(type)
+        try
         {
-            case NotificationType.PUSH:
-                var pushNotification = _notificationsFactory.CreateNotification(notificationInformationType, type, title, message);
-                await _pushNotificationsClient.SendPushNotification((PushNotification)pushNotification);
-                break;
-            case NotificationType.EMAIL:
-                var notification = _notificationsFactory.CreateNotification(notificationInformationType, type, title, message);
-                await _emailClient.SendEmail(((MailNotification)notification).ConvertToMailMessage(), user.Email);
-                break;
-            default:
-                break;
+            var notification = _mailNotificationsFactory.CreateNotification(notificationInformationType, title, message);
+            await _emailClient.SendEmail(((MailNotification)notification).ConvertToMailMessage(), user.Email);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e,e.Message);
+            throw;
         }
     }
-    //TODO: Implement   
-    public async Task SendNotificationAsync(ApplicationUser user, string title, string message, NotificationInformationType notificationInformationType,NotificationType type, List<Attachment> attachments)
+
+    public async Task SendPushNotificationAsync(ApplicationUser user, string title, string message,
+        NotificationInformationType notificationInformationType)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var notification = _pushNotificationsFactory.CreateNotification(notificationInformationType, title, message);
+            await _emailClient.SendEmail(((MailNotification)notification).ConvertToMailMessage(), user.Email);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e,e.Message);
+            throw;
+        }
     }
 
-    //TODO: Implement   
-    public Task SendNotificationAsync(ApplicationUser user, string title, string message,
-        NotificationInformationType notificationInformationType, NotificationType type, string topic)
+    public async Task SendPushNotificationAsync(ApplicationUser user, string title, string message,
+        NotificationInformationType notificationInformationType, string image)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var notification = _pushNotificationsFactory.CreateNotification(notificationInformationType, title, message,image);
+            await _emailClient.SendEmail(((MailNotification)notification).ConvertToMailMessage(), user.Email);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e,e.Message);
+            throw;
+        }
     }
 
-    //TODO: Implement   
-    public Task SendNotificationAsync(ApplicationUser user, string title, string message,
-        NotificationInformationType notificationInformationType, NotificationType type, string topic, string image)
+    public async Task SendPushNotificationAsync(ApplicationUser user, string title, string message,
+        NotificationInformationType notificationInformationType, string? image, string clickAction, ClickActionType actionType)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var notification = _pushNotificationsFactory.CreateNotification(notificationInformationType, title, message,image,clickAction,actionType);
+            await _emailClient.SendEmail(((MailNotification)notification).ConvertToMailMessage(), user.Email);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e,e.Message);
+            throw;
+        }
     }
 }
