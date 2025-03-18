@@ -23,6 +23,7 @@ public class RolesService : IRolesService
     
     #endregion
     
+    #region Methods
     //TODO: refactor database work, to be more beautiful
     public async Task<ApplicationRole> CreateRoleAsync(string roleName, string description)
     {
@@ -138,5 +139,6 @@ public class RolesService : IRolesService
 
         return (pagedRoles, totalItems);
     }
+    #endregion
 
 }
