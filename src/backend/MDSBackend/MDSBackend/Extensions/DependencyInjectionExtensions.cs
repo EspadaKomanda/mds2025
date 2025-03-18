@@ -10,6 +10,7 @@ using MDSBackend.Services.CurrentUsers;
 using MDSBackend.Services.JWT;
 using MDSBackend.Services.UsersProfile;
 using MDSBackend.Utils;
+using MDSBackend.Utils.Factory;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -166,7 +167,8 @@ public static class FactoryExtensions
 {
     public static IServiceCollection AddFactories(this IServiceCollection services)
     {
-        services.AddSingleton<NotificationsFactory>();
+        services.AddSingleton<MailNotificationsFactory>();
+        services.AddSingleton<PushNotificationsFactory>();
         return services;
     }
 }

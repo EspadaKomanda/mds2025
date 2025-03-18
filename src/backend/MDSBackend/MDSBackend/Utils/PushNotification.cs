@@ -17,6 +17,7 @@ public class PushNotification : Notification
     public int? ClickActionType { get => (int)_clickActionType;  }
 
     #endregion
+    
     #region Constructor
 
     public PushNotification(NotificationInformationType type, string title, string message, string image, string clickAction, ClickActionType clickActionType) : base(type, title, message)

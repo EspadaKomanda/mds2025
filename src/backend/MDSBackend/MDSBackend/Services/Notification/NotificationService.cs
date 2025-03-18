@@ -1,6 +1,7 @@
 using System.Net.Mail;
 using MDSBackend.Models.Database;
 using MDSBackend.Utils;
+using MDSBackend.Utils.Factory;
 
 namespace MDSBackend.Services.NotificationService;
 
@@ -9,19 +10,22 @@ public class NotificationService : INotificationService
     #region Services
 
     private readonly EmailClient _emailClient;
-    private readonly NotificationsFactory _notificationsFactory;
+    private readonly MailNotificationsFactory _mailNotificationsFactory;
     private readonly ILogger<NotificationService> _logger;
     private readonly PushNotificationsClient _pushNotificationsClient;
+    private readonly PushNotificationsFactory _pushNotificationsFactory;
+    
     #endregion
 
     #region Constructor
 
-    public NotificationService(EmailClient emailClient, NotificationsFactory notificationsFactory, PushNotificationsClient pushNotificationsClient, ILogger<NotificationService> logger)
+    public NotificationService(EmailClient emailClient,  PushNotificationsClient pushNotificationsClient, ILogger<NotificationService> logger, MailNotificationsFactory mailNotificationsFactory, PushNotificationsFactory pushNotificationsFactory)
     {
         _emailClient = emailClient;
-        _notificationsFactory = notificationsFactory;
         _pushNotificationsClient = pushNotificationsClient;
         _logger = logger;
+        _mailNotificationsFactory = mailNotificationsFactory;
+        _pushNotificationsFactory = pushNotificationsFactory;
     }
 
     #endregion
