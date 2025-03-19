@@ -1,5 +1,6 @@
 using AutoMapper;
 using MDSBackend.Database.Repositories;
+using MDSBackend.Exceptions.Services.ProfileService;
 using MDSBackend.Models.Database;
 using MDSBackend.Models.DTO;
 
@@ -30,47 +31,77 @@ private readonly UnitOfWork _unitOfWork;
 
     # region Methods
 
-    public async Task<bool> AddUserProfile(UserProfileDTO userProfile)
+    public async Task<UserProfile> AddUserProfile(UserProfileDTO userProfile)
+    {
+        UserProfile userProfileEntity = _mapper.Map<UserProfile>(userProfile);
+
+        return await AddUserProfile(userProfileEntity);
+    }
+
+    public async Task<UserProfile> AddUserProfile(UserProfile userProfile)
     {
 
-        UserProfile userProfileEntity = _mapper.Map<UserProfile>(userProfile);
+        UserProfile userProfileEntity = userProfile;
 
         // Make sure a user profile for the given user does not exist yet
         if (_unitOfWork.UserProfileRepository.Get(x => x.UserId == userProfile.UserId).Any())
         {
             _logger.LogWarning("A user profile already exists for the given user id: {UserId}", userProfile.UserId);
-            return false;
+            throw new ProfileExistsException($"{userProfile.UserId}");
         }
 
         await _unitOfWork.UserProfileRepository.InsertAsync(userProfileEntity);
         if (await _unitOfWork.SaveAsync())
         {
             _logger.LogInformation("User profile added for user id: {UserId}", userProfile.UserId);
-            return true;
+            return userProfileEntity;
         }
 
         _logger.LogError("Failed to add user profile for user id: {UserId}", userProfile.UserId);
-        return false;
+        throw new ProfileCreationException();
     }
 
-    public UserProfileDTO GetUserProfileByUserId(long id)
+    public UserProfile? GetUserProfileByUserId(long id)
     {
-        throw new NotImplementedException();
+        return _unitOfWork.UserProfileRepository.Get(x => x.UserId == id).FirstOrDefault();
     }
 
-    public UserProfileDTO GetUserProfileById(long id)
+    public UserProfile? GetUserProfileById(long id)
     {
-        throw new NotImplementedException();
+        return _unitOfWork.UserProfileRepository.GetByID(id);
     }
-    
+
     public async Task<bool> UpdateUserProfile(UserProfileDTO userProfile)
     {
-        throw new NotImplementedException();
+        var userProfileEntityUpdated = _mapper.Map<UserProfile>(userProfile);
+        return await UpdateUserProfile(userProfileEntityUpdated);
+    }
+
+    public async Task<bool> UpdateUserProfile(UserProfile userProfile)
+    {
+        var userProfileEntityUpdated = userProfile;
+        var userProfileEntity = await _unitOfWork.UserProfileRepository.GetByIDAsync(userProfileEntityUpdated.Id);
+
+        if (userProfileEntity == null)
+        {
+            throw new ProfileNotFoundException($"{userProfileEntityUpdated.Id}");   
+        }
+        
+        // TODO: make sure that the mapper will act as intended
+        _mapper.Map(userProfileEntityUpdated, userProfileEntity);
+
+        if (!await _unitOfWork.SaveAsync())
+        {
+            throw new ProfileUpdateException($"Failed to update user profile {userProfileEntityUpdated.Id}");
+        }
+
+        _logger.LogInformation("User profile updated for user id: {UserId}", userProfile.UserId);
+        return true; 
     }
 
     public bool DeleteUserProfile(long id)
     {
-        throw new NotImplementedException();
+       throw new ProfileDeletionException($"Failed to delete user profile {id}"); 
     }
 
     #endregion

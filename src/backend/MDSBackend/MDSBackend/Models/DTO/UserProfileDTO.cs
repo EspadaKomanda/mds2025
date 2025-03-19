@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using MDSBackend.Utils.Enums;
 
 namespace MDSBackend.Models.DTO;
 
@@ -23,6 +24,9 @@ public class UserProfileDTO
 
     [Required(ErrorMessage = "Birthdate is required")]
     public DateTime Birthdate { get; set; }
+
+    [Required(ErrorMessage = "Gender is required")]
+    public Gender Gender { get; set; }
 
     [EmailAddress(ErrorMessage = "Invalid email")]
     public string? ContactEmail { get; set; }
