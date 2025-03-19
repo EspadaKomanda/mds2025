@@ -54,13 +54,13 @@ public class MailNotification : Notification
             case NotificationInformationType.AUTH:
                 return "Авторизация " + Title;
             case NotificationInformationType.INFO:
-                return "Информация"+ Title;
+                return "Информация "+ Title;
             case NotificationInformationType.WARNING:
-                return "Предупреждение"+ Title;
+                return "Предупреждение "+ Title;
             case NotificationInformationType.ERROR:
-                return "Ошибка"+ Title;
+                return "Ошибка "+ Title;
             default:
-                return "Информация"+ Title;
+                return "Информация "+ Title;
         }
     }
 
