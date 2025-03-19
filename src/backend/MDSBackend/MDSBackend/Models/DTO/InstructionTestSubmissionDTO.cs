@@ -9,5 +9,5 @@ public class InstructionTestSubmissionDTO
   public int InstructionTestId { get; set; } 
 
   [Required(ErrorMessage = "Answers must be provided")]
-  public Collection<Collection<int>> Answers { get; set; } = null!;   
+  public ICollection<Collection<int>> Answers { get; set; } = null!;   
 }

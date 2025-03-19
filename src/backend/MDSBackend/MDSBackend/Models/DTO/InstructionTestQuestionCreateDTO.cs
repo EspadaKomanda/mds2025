@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MDSBackend.Models.DTO;
 
-public class InstructionTestQuestionDTO
+public class InstructionTestQuestionCreateDTO
 {
   public long? Id { get; set; }
 
@@ -14,6 +14,7 @@ public class InstructionTestQuestionDTO
   [Required(ErrorMessage = "Must have answer options")]
   public ICollection<string> Answers { get; set; } = null!;
 
-  public ICollection<int>? CorrectAnswers { get; set; }
+  [Required(ErrorMessage = "Must have correct answers")]
+  public ICollection<int> CorrectAnswers { get; set; } = null!;
 } 
 
