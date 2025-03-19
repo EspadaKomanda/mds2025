@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using MDSBackend.Database;
 using MDSBackend.Database.Repositories;
@@ -7,6 +9,8 @@ using MDSBackend.Services.Cookies;
 using MDSBackend.Services.CurrentUsers;
 using MDSBackend.Services.JWT;
 using MDSBackend.Services.UsersProfile;
+using MDSBackend.Utils;
+using MDSBackend.Utils.Factory;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -109,8 +113,62 @@ public static class UtilServicesExtensions
     public static IServiceCollection AddUtilServices(this IServiceCollection services)
     {
         services.AddScoped<ICurrentUserService, CurrentUserService>();
-        services.AddScoped<IJWTService, JWTService>();
+        services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<ICookieService, CookieService>();
+        return services;
+    }
+}
+
+public static class NotificationSettings
+{
+    public static IServiceCollection AddPushNotifications(this IServiceCollection services, IConfiguration configuration)
+    {
+        var notificationSettings = configuration.GetSection("NotificationSettings");
+        var apiKey = notificationSettings["ApiKey"];
+        var token = notificationSettings["Token"];
+        var baseUrl = notificationSettings["Url"];
+        var projectId = notificationSettings["ProjectId"];
+        
+        HttpClient client = new HttpClient();
+        client.BaseAddress = new Uri(baseUrl);
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+
+        services.AddSingleton(provider =>
+        {
+            var logger = provider.GetRequiredService<ILogger<PushNotificationsClient>>();
+            return new PushNotificationsClient(client, logger, token, projectId);
+        });
+        return services;
+    }
+}
+public static class EmailExtensions
+{
+    public static IServiceCollection AddEmail(this IServiceCollection services, IConfiguration configuration)
+    {
+        var smtpSettings = configuration.GetSection("EmailSettings");
+        var host = smtpSettings["Host"] ?? "localhost";
+        var port = Convert.ToInt32(smtpSettings["Port"] ?? "25");
+        var username = smtpSettings["Username"] ?? "username";
+        var password = smtpSettings["Password"] ?? "password";
+        var email = smtpSettings["EmailFrom"] ?? "email";
+        services.AddScoped<SmtpClient>(sp => new SmtpClient(host)
+        {
+            Port = port,
+            Credentials = new NetworkCredential(username, password),
+            EnableSsl = true,
+        });
+
+        services.AddSingleton<EmailClient>();
+        return services;
+    }
+}
+
+public static class FactoryExtensions
+{
+    public static IServiceCollection AddFactories(this IServiceCollection services)
+    {
+        services.AddSingleton<MailNotificationsFactory>();
+        services.AddSingleton<PushNotificationsFactory>();
         return services;
     }
 }

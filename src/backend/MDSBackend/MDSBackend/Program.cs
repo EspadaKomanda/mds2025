@@ -4,19 +4,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
 
+#region Factories
+
+builder.Services.AddFactories();
+
+#endregion
+
 #region Mapping
 
 builder.Services.AddMapping();
 
 #endregion
 
-
 #region Caching
 
 builder.Services.AddRedisCaching(builder.Configuration);
 
 #endregion
-
 
 #region Logging
 
@@ -30,6 +34,11 @@ builder.Services.AddUtilServices();
 
 #endregion
 
+#region SMTP
+
+builder.Services.AddEmail(builder.Configuration);
+
+#endregion
 
 #region Database
 

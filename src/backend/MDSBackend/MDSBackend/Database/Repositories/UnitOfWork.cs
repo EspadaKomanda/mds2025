@@ -10,7 +10,7 @@ public class UnitOfWork : IDisposable
     private ApplicationContext _context;
     private GenericRepository<UserProfile> _userProfileRepository;
     private GenericRepository<ApplicationRole> _roleRepository;
-    private GenericRepository<Right> _rightRepository;
+    private GenericRepository<Right?> _rightRepository;
     private GenericRepository<RefreshToken> _refreshTokenRepository;
     private GenericRepository<RoleRight> _roleRightRepository;
     private GenericRepository<UserRole> _userRoleRepository;
@@ -52,13 +52,13 @@ public class UnitOfWork : IDisposable
         }
     }
     
-    public GenericRepository<Right> RightRepository
+    public GenericRepository<Right?> RightRepository
     {
         get
         {
             if (this._rightRepository == null)
             {
-                this._rightRepository = new GenericRepository<Right>(_context);
+                this._rightRepository = new GenericRepository<Right?>(_context);
             }
             return _rightRepository;
         }
@@ -107,11 +107,17 @@ public class UnitOfWork : IDisposable
 
     
 
-    public void Save()
+    public bool Save()
     {
-        _context.SaveChanges();
+       return _context.SaveChanges() > 0;
     }
 
+    public async Task<bool> SaveAsync()
+    {
+       return await _context.SaveChangesAsync() > 0;
+    }
+
+    
     private bool disposed = false;
 
     protected virtual void Dispose(bool disposing)
