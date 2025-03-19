@@ -8,8 +8,16 @@ namespace MDSBackend.Services.UsersProfile;
 public class UserProfileService : IUserProfileService
 {
 private readonly UnitOfWork _unitOfWork;
+
+    # region Services
+
     private readonly ILogger<UserProfileService> _logger;
     private readonly IMapper _mapper;
+
+    #endregion
+
+
+    #region Constructor
 
     public UserProfileService(UnitOfWork unitOfWork, ILogger<UserProfileService> logger, IMapper mapper)
     {
@@ -18,12 +26,14 @@ private readonly UnitOfWork _unitOfWork;
         _mapper = mapper;
     }
 
+    #endregion
+
+    # region Methods
+
     public async Task<bool> AddUserProfile(UserProfileDTO userProfile)
     {
 
         UserProfile userProfileEntity = _mapper.Map<UserProfile>(userProfile);
-
-        await _unitOfWork.BeginTransactionAsync();
 
         // Make sure a user profile for the given user does not exist yet
         if (_unitOfWork.UserProfileRepository.Get(x => x.UserId == userProfile.UserId).Any())
@@ -33,26 +43,35 @@ private readonly UnitOfWork _unitOfWork;
         }
 
         await _unitOfWork.UserProfileRepository.InsertAsync(userProfileEntity);
-        _unitOfWork.Save();
-        await _unitOfWork.CommitAsync();
+        if (await _unitOfWork.SaveAsync())
+        {
+            _logger.LogInformation("User profile added for user id: {UserId}", userProfile.UserId);
+            return true;
+        }
 
-        _logger.LogInformation("User profile added for user id: {UserId}", userProfile.UserId);
-        return true;
+        _logger.LogError("Failed to add user profile for user id: {UserId}", userProfile.UserId);
+        return false;
     }
+
     public UserProfileDTO GetUserProfileByUserId(long id)
     {
         throw new NotImplementedException();
     }
+
     public UserProfileDTO GetUserProfileById(long id)
     {
         throw new NotImplementedException();
     }
+    
     public async Task<bool> UpdateUserProfile(UserProfileDTO userProfile)
     {
         throw new NotImplementedException();
     }
+
     public bool DeleteUserProfile(long id)
     {
         throw new NotImplementedException();
     }
+
+    #endregion
 }
