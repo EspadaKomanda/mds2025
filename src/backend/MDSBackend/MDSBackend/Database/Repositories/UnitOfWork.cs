@@ -14,6 +14,9 @@ public class UnitOfWork : IDisposable
     private GenericRepository<RefreshToken> _refreshTokenRepository;
     private GenericRepository<RoleRight> _roleRightRepository;
     private GenericRepository<UserRole> _userRoleRepository;
+    private GenericRepository<InstructionTest> _instructionTestRepository;
+    private GenericRepository<InstructionTestQuestion> _instructionTestQuestionRepository;
+    private GenericRepository<InstructionTestResult> _instructionTestResultRepository;
     
     #endregion
     
@@ -100,7 +103,41 @@ public class UnitOfWork : IDisposable
         }
     }
     
-    
+    public GenericRepository<InstructionTest> InstructionTestRepository
+    {
+        get
+        {
+            if (this._instructionTestRepository == null)
+            {
+                this._instructionTestRepository = new GenericRepository<InstructionTest>(_context);              
+            }            
+            return _instructionTestRepository;
+        }
+    }
+
+    public GenericRepository<InstructionTestQuestion> InstructionTestQuestionRepository
+    {
+        get
+        {
+            if (this._instructionTestQuestionRepository == null)
+            {
+                this._instructionTestQuestionRepository = new GenericRepository<InstructionTestQuestion>(_context);              
+            }            
+            return _instructionTestQuestionRepository;
+        }
+    }
+
+    public GenericRepository<InstructionTestResult> InstructionTestResultRepository
+    {
+        get
+        {
+            if (this._instructionTestResultRepository == null)
+            {
+                this._instructionTestResultRepository = new GenericRepository<InstructionTestResult>(_context);              
+            }            
+            return _instructionTestResultRepository;
+        }
+    }
 
     #endregion
  
