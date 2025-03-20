@@ -19,9 +19,9 @@ public class InstructionTestsService : IInstructionTestsService
         _mapper = mapper;
     }
 
-    // XXX: Make transactional
     public async Task<InstructionTest> CreateInstructionTestAsync(InstructionTestCreateDTO instructionTest)
     {
+        await _unitOfWork.BeginTransactionAsync();
         // Instruction test creation
         InstructionTest newInstructionTest = _mapper.Map<InstructionTest>(instructionTest);
         await _unitOfWork.InstructionTestRepository.InsertAsync(newInstructionTest);
@@ -44,6 +44,7 @@ public class InstructionTestsService : IInstructionTestsService
 
         if (await _unitOfWork.SaveAsync())
         {
+            await _unitOfWork.CommitAsync();
             _logger.LogInformation("Instruction test created ({Id})", newInstructionTest.Id);
         }
 

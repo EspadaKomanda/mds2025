@@ -7,6 +7,7 @@ using MDSBackend.Logs;
 using MDSBackend.Mapper;
 using MDSBackend.Services.Cookies;
 using MDSBackend.Services.CurrentUsers;
+using MDSBackend.Services.InstructionTests;
 using MDSBackend.Services.JWT;
 using MDSBackend.Services.UsersProfile;
 using MDSBackend.Utils;
@@ -104,6 +105,7 @@ public static class BackendServicesExtensions
     public static IServiceCollection AddBackendServices(this IServiceCollection services)
     {
         services.AddScoped<IUserProfileService, UserProfileService>();
+        services.AddScoped<IInstructionTestsService, InstructionTestsService>();
         return services;
     }
 }
