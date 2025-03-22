@@ -19,7 +19,7 @@ public class InstructionTestsService : IInstructionTestsService
         _mapper = mapper;
     }
 
-    public async Task<InstructionTest> CreateInstructionTestAsync(InstructionTestCreateDTO instructionTest)
+    public async Task<InstructionTestDTO> CreateInstructionTestAsync(InstructionTestCreateDTO instructionTest)
     {
         await _unitOfWork.BeginTransactionAsync();
         // Instruction test creation
@@ -46,6 +46,7 @@ public class InstructionTestsService : IInstructionTestsService
         {
             await _unitOfWork.CommitAsync();
             _logger.LogInformation("Instruction test created ({Id})", newInstructionTest.Id);
+            return _mapper.Map<InstructionTestDTO>(newInstructionTest);
         }
 
         throw new InstructionTestCreationException($"Failed to add questions to instruction test {newInstructionTest.Id}");
@@ -89,8 +90,13 @@ public class InstructionTestsService : IInstructionTestsService
 
     }
 
+    public Task<List<InstructionTestResultDTO>> GetCompletedInstructionTestsByUserId(long userId)
+    {
+        throw new NotImplementedException();
+    }
+
     // XXX: Probably should return DTO
-    public InstructionTest GetInstructionTestById(long id)
+    public InstructionTestDTO GetInstructionTestById(long id)
     {
         var instructionTest = _unitOfWork.InstructionTestRepository.GetByID(id);
         if (instructionTest == null)
@@ -98,12 +104,27 @@ public class InstructionTestsService : IInstructionTestsService
             _logger.LogError("Instruction test with id {Id} not found", id);
             throw new InstructionTestNotFoundException();
         }
-        return instructionTest;
+        return _mapper.Map<InstructionTestDTO>(instructionTest);
     }
 
-    public List<InstructionTest> GetInstructionTestsByInstructionId(long instructionId)
+    public Task<List<InstructionTestResultDTO>> GetInstructionTestResultsByInstructionId(long instructionId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<InstructionTestResultDTO>> GetInstructionTestResultsByUserId(long userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<InstructionTestDTO> GetInstructionTestsByInstructionId(long instructionId)
     {
         // TODO: InstructionService must be implemented first
+        throw new NotImplementedException();
+    }
+
+    public Task<InstructionTestResultDTO> SubmitInstructionTestAsync(long userId, InstructionTestSubmissionDTO submission)
+    {
         throw new NotImplementedException();
     }
 
