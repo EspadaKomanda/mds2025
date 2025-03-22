@@ -5,6 +5,7 @@ namespace MDSBackend.Models.DTO;
 
 public class InstructionTestCreateDTO
 {
+  public long? Id { get; set; }
   public string? Title { get; set; }
 
   [Required(ErrorMessage = "Questions must be specified")]

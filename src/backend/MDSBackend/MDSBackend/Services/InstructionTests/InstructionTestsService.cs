@@ -51,14 +51,54 @@ public class InstructionTestsService : IInstructionTestsService
         throw new InstructionTestCreationException($"Failed to add questions to instruction test {newInstructionTest.Id}");
       }
 
-    public Task<bool> DeleteInstructionTestByIdAsync(long id)
+    public async Task<bool> DeleteInstructionTestByIdAsync(long id)
     {
-        throw new NotImplementedException();
+        var instructionTest = _unitOfWork.InstructionTestRepository.GetByID(id);
+
+        if (instructionTest == null)
+        {
+            _logger.LogError("Instruction test with id {Id} not found", id);
+            throw new InstructionTestNotFoundException();
+        }
+
+        // Find all questions 
+        var questions = _unitOfWork.InstructionTestQuestionRepository.Get(q => q.InstructionTestId == id);
+
+        // Start transaction
+        await _unitOfWork.BeginTransactionAsync();
+
+        foreach (var question in questions)
+        {
+            _unitOfWork.InstructionTestQuestionRepository.Delete(question);
+        }
+
+        // Delete instruction test
+        _unitOfWork.InstructionTestRepository.Delete(instructionTest);
+
+        if (await _unitOfWork.SaveAsync())
+        {
+            await _unitOfWork.CommitAsync();
+            _logger.LogInformation("Instruction test deleted ({Id})", id);
+            return true;
+        }
+        else
+        {
+            _logger.LogError("Failed to delete instruction test ({Id})", id);
+            throw new InstructionTestDeletionException();
+        }
+
     }
 
+    // XXX: Probably should return DTO
     public InstructionTest GetInstructionTestById(long id)
     {
-        throw new NotImplementedException();
+        var instructionTest = _unitOfWork.InstructionTestRepository.GetByID(id);
+        if (instructionTest == null)
+        {
+            _logger.LogError("Instruction test with id {Id} not found", id);
+            throw new InstructionTestNotFoundException();
+        }
+        return instructionTest;
     }
 
     public List<InstructionTest> GetInstructionTestsByInstructionId(long instructionId)
@@ -67,9 +107,24 @@ public class InstructionTestsService : IInstructionTestsService
         throw new NotImplementedException();
     }
 
-    public Task<bool> UpdateInstructionTestAsync(InstructionTestCreateDTO instructionTest)
+    public async Task<bool> UpdateInstructionTestAsync(InstructionTestCreateDTO instructionTest)
     {
-        throw new NotImplementedException();
+        if (instructionTest == null)
+        {
+            _logger.LogWarning("Instruction test id was not provided for update.");
+            throw new InstructionTestNotFoundException();
+        }
+        var oldInstructionTest = _unitOfWork.InstructionTestRepository.GetByID(instructionTest.Id!);
+
+        if (oldInstructionTest == null)
+        {
+            _logger.LogWarning("Instruction test with id {Id} not found for update", instructionTest.Id);
+            throw new InstructionTestNotFoundException();
+        }
+
+        _mapper.Map(instructionTest, oldInstructionTest);
+        _unitOfWork.InstructionTestRepository.Update(oldInstructionTest);
+        return await _unitOfWork.SaveAsync();
     }
 }
 

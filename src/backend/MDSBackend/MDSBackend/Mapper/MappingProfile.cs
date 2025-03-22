@@ -40,6 +40,7 @@ public class MappingProfile : Profile
         #region InstructionTestMapping
 
         CreateMap<InstructionTestCreateDTO, InstructionTest>()
+            .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(x => x.Title, opt => opt.MapFrom(src => src.Title))
             .ForMember(x => x.ScoreCalcMethod, opt => opt.MapFrom(src => src.ScoreCalcMethod))
             .ForMember(x => x.MinScore, opt => opt.MapFrom(src => src.MinScore))

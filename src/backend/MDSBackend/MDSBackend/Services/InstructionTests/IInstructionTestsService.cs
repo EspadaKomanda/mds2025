@@ -3,6 +3,8 @@ using MDSBackend.Models.DTO;
 
 namespace MDSBackend.Services.InstructionTests;
 
+// TODO: methods for test completion, viewing results, checking rights,
+// updating questions, checking user results
 public interface IInstructionTestsService
 {
   public Task<InstructionTest> CreateInstructionTestAsync(InstructionTestCreateDTO instructionTest);
