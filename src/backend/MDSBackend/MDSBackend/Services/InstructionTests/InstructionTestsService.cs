@@ -140,14 +140,18 @@ public class InstructionTestsService : IInstructionTestsService
         return _mapper.Map<List<InstructionTestQuestionDTO>>(questions);
     }
 
-    public Task<List<InstructionTestResultDTO>> GetInstructionTestResultsByInstructionId(long instructionId)
+    public List<InstructionTestResultDTO> GetUserInstructionTestResultsByInstructionId(long userId, long instructionId)
     {
-        throw new NotImplementedException();
+        var userTestResults = _unitOfWork.InstructionTestResultRepository.Get(
+            q => q.UserId == userId && q.InstructionTestId == instructionId).ToList();
+        return _mapper.Map<List<InstructionTestResultDTO>>(userTestResults);
     }
 
-    public Task<List<InstructionTestResultDTO>> GetInstructionTestResultsByUserId(long userId)
+    public List<InstructionTestResultDTO> GetInstructionTestResultsByUserId(long userId)
     {
-        throw new NotImplementedException();
+        var userTestResults = _unitOfWork.InstructionTestResultRepository.Get(
+            q => q.UserId == userId).ToList();
+        return _mapper.Map<List<InstructionTestResultDTO>>(userTestResults);
     }
 
     public List<InstructionTestDTO> GetInstructionTestsByInstructionId(long instructionId)
