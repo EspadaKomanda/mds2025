@@ -3,6 +3,7 @@ using MDSBackend.Database.Repositories;
 using MDSBackend.Exceptions.Services.InstructionTest;
 using MDSBackend.Models.Database;
 using MDSBackend.Models.DTO;
+using MDSBackend.Utils.Enums;
 
 namespace MDSBackend.Services.InstructionTests;
 
@@ -90,12 +91,38 @@ public class InstructionTestsService : IInstructionTestsService
 
     }
 
-    public Task<List<InstructionTestResultDTO>> GetCompletedInstructionTestsByUserId(long userId)
+    public List<InstructionTestResultDTO> GetCompletedInstructionTestsByUserId(long userId)
     {
-        throw new NotImplementedException();
+        var userTestAttempts = _unitOfWork.InstructionTestResultRepository.Get(
+            q => q.UserId == userId).ToList();
+
+        var userInstructionTests = _unitOfWork.InstructionTestRepository.Get(
+            q => userTestAttempts.Any(a => a.InstructionTestId == q.Id)).ToList();
+
+        var conclusiveUserTestResults = new List<InstructionTestResultDTO>();
+        foreach (var instructionTest in userInstructionTests)
+        {
+            var scoreCalcMethod = instructionTest.ScoreCalcMethod;
+            int maxScore = 0;
+
+            if (scoreCalcMethod == InstructionTestScoreCalcMethod.AverageGrade)
+            {
+                maxScore = (int)Math.Round(userTestAttempts.Where(q => q.InstructionTestId == instructionTest.Id).Average(q => q.Score));
+            }
+            else
+            {
+                maxScore = userTestAttempts.Where(q => q.InstructionTestId == instructionTest.Id).Max(q => q.Score);
+            }
+
+            if (maxScore >= instructionTest.MinScore)
+            {
+                conclusiveUserTestResults.Add(_mapper.Map<InstructionTestResultDTO>(userTestAttempts.First(q => q.InstructionTestId == instructionTest.Id)));
+            }
+        }
+
+        return conclusiveUserTestResults;
     }
 
-    // XXX: Probably should return DTO
     public InstructionTestDTO GetInstructionTestById(long id)
     {
         var instructionTest = _unitOfWork.InstructionTestRepository.GetByID(id);
@@ -105,6 +132,12 @@ public class InstructionTestsService : IInstructionTestsService
             throw new InstructionTestNotFoundException();
         }
         return _mapper.Map<InstructionTestDTO>(instructionTest);
+    }
+
+    public List<InstructionTestQuestionDTO> GetInstructionTestQuestionsByInstructionTestId(long instructionTestId)
+    {
+        var questions = _unitOfWork.InstructionTestQuestionRepository.Get(q => q.InstructionTestId == instructionTestId);
+        return _mapper.Map<List<InstructionTestQuestionDTO>>(questions);
     }
 
     public Task<List<InstructionTestResultDTO>> GetInstructionTestResultsByInstructionId(long instructionId)
