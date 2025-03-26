@@ -54,7 +54,7 @@ public class GenericRepository<TEntity> where TEntity : class
     {
         dbSet.Add(entity);
     }
-    public virtual void InsertRange(IQueryable<TEntity> entities)
+    public virtual void InsertRange(IEnumerable<TEntity> entities)
     {
         dbSet.AddRange(entities);
     }

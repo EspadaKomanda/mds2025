@@ -32,16 +32,10 @@ public class InstructionTestsService : IInstructionTestsService
             throw new InstructionTestCreationException("Failed to save instruction test");
         }
 
-        ICollection<Task> addQuestionTasks = new List<Task>();
-        // Adding questions
-        foreach (var question in instructionTest.Questions)
-        {
-            InstructionTestQuestion newQuestion = _mapper.Map<InstructionTestQuestion>(question);
-            newQuestion.InstructionTestId = newInstructionTest.Id;
-            addQuestionTasks.Add(_unitOfWork.InstructionTestQuestionRepository.InsertAsync(newQuestion));
-        }
-        await Task.WhenAll(addQuestionTasks);
-        
+        // Adding questions using InsertRange
+        List<InstructionTestQuestion> newQuestions = _mapper.Map<List<InstructionTestQuestion>>(instructionTest.Questions);
+        newQuestions.ForEach(q => q.InstructionTestId = newInstructionTest.Id);
+        _unitOfWork.InstructionTestQuestionRepository.InsertRange(newQuestions);
 
         if (await _unitOfWork.SaveAsync())
         {
