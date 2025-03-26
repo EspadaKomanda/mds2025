@@ -85,7 +85,7 @@ public class RoleController : ControllerBase
 
             var role = await _rolesService.CreateRoleAsync(model.Name, model.Description);
             _logger.LogInformation($"Role created successfully, {role.Id}");
-            return CreatedAtAction(nameof(GetRoleByIdAsync), new { id = role.Id }, role);
+            return CreatedAtAction(nameof(CreateRoleAsync), new { id = role.Id }, role);
         }
         catch (Exception e)
         {
@@ -183,7 +183,7 @@ public class RoleController : ControllerBase
             return StatusCode(500, new BasicResponse()
             {
                 Code = 500,
-                Message = "Failed to update role"
+                Message = "Failed to delete role"
             });
         }
        
