@@ -48,7 +48,7 @@ public class MappingProfile : Profile
         
         #endregion
 
-        #region InstructionTestQuestionCreate
+        #region InstructionTestQuestionCreateMapping
 
         CreateMap<InstructionTestQuestionCreateDTO, InstructionTestQuestion>()
             .ForMember(x => x.Question, opt => opt.MapFrom(src => src.Question))
@@ -57,6 +57,25 @@ public class MappingProfile : Profile
             .ForMember(x => x.CorrectAnswers, opt => opt.MapFrom(src => src.CorrectAnswers));
 
         #endregion
+
+        #region InstructionTestQuestionMapping
+
+        CreateMap<InstructionTestQuestion, InstructionTestQuestionDTO>()
+            .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(x => x.Question, opt => opt.MapFrom(src => src.Question))
+            .ForMember(x => x.Answers, opt => opt.MapFrom(src => src.Answers))
+            .ForMember(x => x.IsMultipleAnswer, opt => opt.MapFrom(src => src.IsMultipleAnswer));
+
+        #endregion
+
+        #region InstructionTestResultMapping
+
+        CreateMap<InstructionTestResult, InstructionTestResultDTO>()
+            .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(x => x.UserId, opt => opt.MapFrom(src => src.UserId))
+            .ForMember(x => x.InstructionTestId, opt => opt.MapFrom(src => src.InstructionTestId))
+            .ForMember(x => x.Score, opt => opt.MapFrom(src => src.Score));
       
+        #endregion
     }
 }
