@@ -15,5 +15,6 @@ public class InstructionTestResult
   [Required(ErrorMessage = "User is required")]
   public ApplicationUser User { get; set; } = null!;
 
+  [Range(0, 100, ErrorMessage = "Score must be a number from 0 to 100")]
   public int Score { get; set; }
 }

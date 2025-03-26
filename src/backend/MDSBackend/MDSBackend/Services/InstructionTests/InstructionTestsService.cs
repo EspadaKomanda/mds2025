@@ -160,9 +160,104 @@ public class InstructionTestsService : IInstructionTestsService
         throw new NotImplementedException();
     }
 
-    public Task<InstructionTestResultDTO> SubmitInstructionTestAsync(long userId, InstructionTestSubmissionDTO submission)
+    public async Task<InstructionTestResultDTO> SubmitInstructionTestAsync(long userId, InstructionTestSubmissionDTO submission)
     {
-        throw new NotImplementedException();
+        // Retrieve the test and questions 
+        var instructionTest = _unitOfWork.InstructionTestRepository.GetByID(submission.InstructionTestId);
+        
+        if (instructionTest == null)
+        {
+            _logger.LogError("Instruction test with id {Id} not found", submission.InstructionTestId);
+            throw new InstructionTestNotFoundException();
+        }
+        
+        // Check remaining attempts
+        var userTestAttempts = _unitOfWork.InstructionTestResultRepository.Get(
+            q => q.UserId == userId && q.InstructionTestId == submission.InstructionTestId).ToList();
+
+        if (userTestAttempts.Count >= instructionTest.MaxAttempts)
+        {
+            _logger.LogWarning("User {UserId}: denied submission for test {InstructionTestId}: max attempts reached", userId, submission.InstructionTestId);
+            throw new InstructionTestSubmissionException();
+        }
+
+        var questions = _unitOfWork.InstructionTestQuestionRepository.Get(q => q.InstructionTestId == submission.InstructionTestId).ToList();
+
+        // Verify answers amount
+        if (questions.Count != submission.Answers.Count)
+        {
+            _logger.LogWarning("User {UserId}: denied submission for test {InstructionTestId}: wrong number of answers", userId, submission.InstructionTestId);
+            throw new InstructionTestSubmissionException();
+        }
+
+        // Evaluate answers
+        double score = 0;
+        int maxErrorPerQuestion = 1;
+        for (int i = 0; i < questions.Count; i++)
+        {
+            var question = questions[i];
+
+            // User answers for the question without duplicate options
+            var answer = submission.Answers[i].Distinct();
+
+            if (question.IsMultipleAnswer)
+            {
+                int correctUserAnswersCount = 0;
+                int incorrectUserAnswersCount = 0;
+                int correctAnswersCount = question.CorrectAnswers.Count;
+
+                foreach (var option in answer)
+                {
+                    if (question.CorrectAnswers.Contains(option))
+                    {
+                        correctUserAnswersCount++;
+                    }
+                    else
+                    {
+                        incorrectUserAnswersCount++;
+                    }
+                }
+
+                if (incorrectUserAnswersCount > maxErrorPerQuestion || correctUserAnswersCount == 0)
+                {
+                    // Nothing scored for the question
+                    continue;
+                }
+
+                // One question is worth 1 point max
+                double questionScore = correctUserAnswersCount / (double)correctAnswersCount;
+
+                // Add the question score, or half of it if an error is present
+                score += incorrectUserAnswersCount > 0 ? questionScore /= 2 : questionScore;
+            }
+            else
+            {
+                score += question.CorrectAnswers.Contains(answer.First()) ? 1 : 0;
+            }
+        }
+
+        score = Math.Round(score / questions.Count)*100;
+
+        // Add test result
+        await _unitOfWork.BeginTransactionAsync();
+
+        InstructionTestResult newTestResult = new InstructionTestResult()
+        {
+            UserId = userId,
+            InstructionTestId = submission.InstructionTestId,
+            Score = (int)score
+        };
+
+        _unitOfWork.InstructionTestResultRepository.Insert(newTestResult);
+        
+        if (!await _unitOfWork.SaveAsync())
+        {
+            _logger.LogError("Failed to save test result for user {UserId} and test {InstructionTestId}", userId, submission.InstructionTestId);
+            throw new InstructionTestSubmissionException(); 
+        }
+
+        await _unitOfWork.CommitAsync();
+        return _mapper.Map<InstructionTestResultDTO>(newTestResult);
     }
 
     public async Task<bool> UpdateInstructionTestAsync(InstructionTestCreateDTO instructionTest)
