@@ -108,15 +108,14 @@ public class JwtService : IJwtService
         return validatedToken as JwtSecurityToken;
     }
 
-    public async Task<RefreshToken> GenerateRefreshTokenAsync(ApplicationUser user,  string remoteIpAddress)
+    public async Task<RefreshToken> GenerateRefreshTokenAsync(ApplicationUser user)
     {
         var dbRefreshToken = new RefreshToken
         {
             UserId = user.Id,
             Token = GenerateRefreshToken(),
             Expires = DateTime.UtcNow.AddDays(double.Parse(_configuration["JwtSettings:RefreshTokenExpirationDays"])),
-            Created = DateTime.UtcNow,
-            RevokedByIp = remoteIpAddress
+            Created = DateTime.UtcNow
         };
 
         await _unitOfWork.RefreshTokenRepository.InsertAsync(dbRefreshToken);
