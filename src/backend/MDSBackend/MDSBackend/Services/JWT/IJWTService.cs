@@ -8,6 +8,6 @@ public interface IJwtService
 { 
     string GenerateAccessToken(ApplicationUser user);
     JwtSecurityToken ValidateAccessToken(string token);
-    Task<RefreshToken> GenerateRefreshTokenAsync(ApplicationUser user, string remoteIpAddress);
+    Task<RefreshToken> GenerateRefreshTokenAsync(ApplicationUser user);
     Task RevokeRefreshTokenAsync(long userId, string refreshToken, string remoteIpAddress);
 }

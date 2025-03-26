@@ -25,6 +25,7 @@ public class RolesService : IRolesService
     
     #region Methods
     //TODO: refactor database work, to be more beautiful
+    //ToDo: make better exception handling
     public async Task<ApplicationRole> CreateRoleAsync(string roleName, string description)
     {
         var role = new ApplicationRole(roleName)

@@ -54,6 +54,10 @@ public class GenericRepository<TEntity> where TEntity : class
     {
         dbSet.Add(entity);
     }
+    public virtual void InsertRange(IQueryable<TEntity> entities)
+    {
+        dbSet.AddRange(entities);
+    }
     public async virtual Task InsertAsync(TEntity entity)
     {
         await dbSet.AddAsync(entity);
