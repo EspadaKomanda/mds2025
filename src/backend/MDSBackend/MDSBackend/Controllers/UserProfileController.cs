@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MDSBackend.Controllers;
 
-public class UserProfileController : Controller
+[ApiController]
+public class UserProfileController : ControllerBase
 {
     private readonly IUserProfileService _userProfilesService;
     private readonly ILogger<UserProfileController> _logger;

@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MDSBackend.Controllers;
 
-public class InstructionTestController : Controller
+[ApiController]
+public class InstructionTestController : ControllerBase
 {
     private readonly IInstructionTestsService _instructionTestsService;
     private readonly ILogger<InstructionTestController> _logger;
@@ -27,7 +28,7 @@ public class InstructionTestController : Controller
     /// <response code="200">Returns the instruction test DTO</response>
     /// <response code="404">If the instruction test is not found</response>
     [HttpGet]
-    public IActionResult GetInstructionTestById(int id)
+    public IActionResult GetInstructionTestById(long id)
     {
         try
         {
@@ -48,8 +49,9 @@ public class InstructionTestController : Controller
     /// <response code="200">Returns the instruction test DTO</response>
     /// <response code="404">If the instruction test is not found</response>
     [HttpGet]
-    public IActionResult GetInstructionTestByInstructionId(int instructionId)
+    public IActionResult GetInstructionTestByInstructionId(long instructionId)
     {
+        // WARNING: The service method is not implemented at the time of writing this
         try
         {
             var instructionTest = _instructionTestsService.GetInstructionTestsByInstructionId(instructionId);
@@ -69,7 +71,7 @@ public class InstructionTestController : Controller
     /// <response code="200">Returns the instruction test questions</response>
     /// <response code="404">If the instruction test questions are not found</response>
     [HttpGet]
-    public IActionResult GetInstructionTestQuestionsByInstructionTestId(int instructionTestId)
+    public IActionResult GetInstructionTestQuestionsByInstructionTestId(long instructionTestId)
     {
         try
         {
@@ -81,4 +83,68 @@ public class InstructionTestController : Controller
             return NotFound();
         }
     } 
+
+    /// <summary>
+    /// Gets all instruction test results for a user by instruction ID.
+    /// </summary>
+    /// <param name="userId">The ID of the user.</param>
+    /// <param name="instructionId">The ID of the instruction.</param>
+    /// <returns>A list of <see cref="InstructionTestResultDTO"/> containing the instruction test results if found, or a 404 Not Found if not found.</returns>
+    /// <response code="200">Returns the instruction test results</response>
+    /// <response code="404">If the instruction test results are not found</response>
+    [HttpGet]
+    public IActionResult GetUserInstructionTestResultsByInstructionId(long userId, long instructionTestId)
+    {
+        try
+        {
+            var instructionTestResults = _instructionTestsService.GetUserInstructionTestResultsByInstructionTestId(userId, instructionTestId);
+            return Ok(instructionTestResults);
+        }
+        catch (InstructionTestNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    /// <summary>
+    /// Gets all instruction test results for a user by user ID.
+    /// </summary>
+    /// <param name="userId">The ID of the user.</param>
+    /// <returns>A list of <see cref="InstructionTestResultDTO"/> containing the instruction test results if found, or a 404 Not Found if not found.</returns>
+    /// <response code="200">Returns the instruction test results</response>
+    /// <response code="404">If the instruction test results are not found</response>
+    [HttpGet]
+    public IActionResult GetInstructionTestResultsByUserId(long userId)
+    {
+        try
+        {
+            var instructionTestResults = _instructionTestsService.GetInstructionTestResultsByUserId(userId);
+            return Ok(instructionTestResults);
+        }
+        catch (InstructionTestNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    /// <summary>
+    /// Gets all completed instruction test results for a user by user ID.
+    /// </summary>
+    /// <param name="userId">The ID of the user.</param>
+    /// <returns>A list of <see cref="InstructionTestResultDTO"/> containing the instruction test results if found, or a 404 Not Found if not found.</returns>
+    /// <response code="200">Returns the instruction test results</response>
+    /// <response code="404">If the instruction test results are not found</response>
+    [HttpGet]
+    public IActionResult GetCompletedInstructionTestsByUserId(long userId)
+    {
+        try
+        {
+            var instructionTestResults = _instructionTestsService.GetCompletedInstructionTestsByUserId(userId);
+            return Ok(instructionTestResults);
+        }
+        catch (InstructionTestNotFoundException)
+        {
+            return NotFound();
+        }
+    }
 }

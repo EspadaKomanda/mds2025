@@ -11,7 +11,7 @@ public interface IInstructionTestsService
   public Task<bool> UpdateInstructionTestAsync(InstructionTestCreateDTO instructionTest);
   public Task<bool> DeleteInstructionTestByIdAsync(long id);
   public Task<InstructionTestResultDTO> SubmitInstructionTestAsync(long userId, InstructionTestSubmissionDTO submission);
-  public List<InstructionTestResultDTO> GetUserInstructionTestResultsByInstructionId(long userId, long instructionId);
+  public List<InstructionTestResultDTO> GetUserInstructionTestResultsByInstructionTestId(long userId, long instructionId);
   public List<InstructionTestResultDTO> GetInstructionTestResultsByUserId(long userId);
   public List<InstructionTestResultDTO> GetCompletedInstructionTestsByUserId(long userId);
 }

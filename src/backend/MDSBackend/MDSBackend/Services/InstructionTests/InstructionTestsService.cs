@@ -134,10 +134,10 @@ public class InstructionTestsService : IInstructionTestsService
         return _mapper.Map<List<InstructionTestQuestionDTO>>(questions);
     }
 
-    public List<InstructionTestResultDTO> GetUserInstructionTestResultsByInstructionId(long userId, long instructionId)
+    public List<InstructionTestResultDTO> GetUserInstructionTestResultsByInstructionTestId(long userId, long instructionTestId)
     {
         var userTestResults = _unitOfWork.InstructionTestResultRepository.Get(
-            q => q.UserId == userId && q.InstructionTestId == instructionId).ToList();
+            q => q.UserId == userId && q.InstructionTestId == instructionTestId).ToList();
         return _mapper.Map<List<InstructionTestResultDTO>>(userTestResults);
     }
 
