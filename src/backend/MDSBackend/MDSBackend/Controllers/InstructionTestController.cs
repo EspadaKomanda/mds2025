@@ -95,6 +95,7 @@ public class InstructionTestController : ControllerBase
     [HttpGet]
     public IActionResult GetUserInstructionTestResultsByInstructionId(long userId, long instructionTestId)
     {
+        // XXX: userId from authentication or from admin request
         try
         {
             var instructionTestResults = _instructionTestsService.GetUserInstructionTestResultsByInstructionTestId(userId, instructionTestId);
@@ -145,6 +146,81 @@ public class InstructionTestController : ControllerBase
         catch (InstructionTestNotFoundException)
         {
             return NotFound();
+        }
+    }
+
+    /// <summary>
+    /// Creates a new instruction test.
+    /// </summary>
+    /// <param name="model">The instruction test model.</param>
+    /// <returns>A <see cref="InstructionTestDTO"/> containing the created instruction test if successful, or a 500 Internal Server Error if not successful.</returns>
+    /// <response code="200">Returns the created instruction test</response>
+    [HttpPost]
+    public async Task<IActionResult> CreateInstructionTest([FromBody] InstructionTestCreateDTO model)
+    {
+        try
+        {
+            var instructionTest = await _instructionTestsService.CreateInstructionTestAsync(model);
+            return Ok(instructionTest);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Failed to create instruction test");
+        }
+    }
+
+    /// <summary>
+    /// Updates an existing instruction test.
+    /// </summary>
+    /// <param name="model">The instruction test model.</param>
+    /// <returns>A <see cref="InstructionTestDTO"/> containing the updated instruction test if successful, or a 500 Internal Server Error if not successful.</returns>
+    /// <response code="200">Returns the updated instruction test</response>
+    [HttpPut]
+    public async Task<IActionResult> UpdateInstructionTest([FromBody] InstructionTestCreateDTO model)
+    {
+        try
+        {
+            var instructionTest = await _instructionTestsService.UpdateInstructionTestAsync(model);
+            return Ok(instructionTest);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Failed to update instruction test");
+        }
+    }
+
+    /// <summary>
+    /// Deletes an existing instruction test.
+    /// </summary>
+    /// <param name="id">The ID of the instruction test to delete.</param>
+    /// <returns>A <see cref="bool"/></returns>
+    /// <response code="200">Returns the deletion status.</response>
+    [HttpDelete]
+    public async Task<IActionResult> DeleteInstructionTest(long id)
+    {
+        try
+        {
+            await _instructionTestsService.DeleteInstructionTestByIdAsync(id);
+            return Ok();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Failed to delete instruction test");
+        }
+    }
+
+    /// XXX: userId from authentication
+    [HttpPost]
+    public async Task<IActionResult> SubmitInstructionTest(long userId,[FromBody] InstructionTestSubmissionDTO model)
+    {
+        try
+        {
+            await _instructionTestsService.SubmitInstructionTestAsync(userId, model);
+            return Ok();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Failed to submit instruction test");
         }
     }
 }
