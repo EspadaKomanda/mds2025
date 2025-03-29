@@ -109,5 +109,26 @@ public class UserProfileController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Deletes an existing user profile.
+    /// </summary>
+    /// <param name="id">The ID of the user profile to delete.</param>
+    /// <returns>A <see cref="bool"/></returns>
+    /// <response code="200">Returns true.</response>
+    /// <response code="404">If the user profile is not found</response>
+    [HttpDelete]
+    public IActionResult DeleteUserProfile(long id)
+    {
+        try
+        {
+            _userProfilesService.DeleteUserProfile(id);
+            return Ok();
+        }
+        catch (ProfileNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
 }
 

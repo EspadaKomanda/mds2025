@@ -101,13 +101,19 @@ private readonly UnitOfWork _unitOfWork;
 
     public bool DeleteUserProfile(long id)
     {
-       _unitOfWork.UserProfileRepository.Delete(id);
-       if (_unitOfWork.Save())
-       {
-           _logger.LogInformation("User profile deleted: {UserId}", id);
-           return true;
-       }
-       throw new ProfileDeletionException($"Failed to delete user profile {id}"); 
+        var profile = _unitOfWork.UserProfileRepository.GetByID(id);
+        if (profile == null)
+        {
+            throw new ProfileNotFoundException($"{id}");
+        }
+
+        _unitOfWork.UserProfileRepository.Delete(id);
+        if (_unitOfWork.Save())
+        {
+            _logger.LogInformation("User profile deleted: {UserId}", id);
+            return true;
+        }
+        throw new ProfileDeletionException($"Failed to delete user profile {id}"); 
     }
 
     #endregion
