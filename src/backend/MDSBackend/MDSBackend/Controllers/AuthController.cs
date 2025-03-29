@@ -2,7 +2,10 @@ using MDSBackend.Models.BasicResponses;
 using MDSBackend.Models.Database;
 using MDSBackend.Models.DTO;
 using MDSBackend.Services.JWT;
+using MDSBackend.Services.NotificationService;
 using MDSBackend.Services.TFA;
+using MDSBackend.Utils;
+using MDSBackend.Utils.Factory;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -19,18 +22,25 @@ public class AuthController : ControllerBase
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IJwtService _jwtService;
     private readonly ITwoFactorService _twoFactorAuthService;
+    private readonly INotificationService _notificationService;
+    private readonly MailNotificationsFactory _mailNotificationsFactory;
+    private readonly PushNotificationsFactory _pushNotificationsFactory;
+    
     
     #endregion
     
     #region Constructor
 
-    public AuthController(ILogger<AuthController> logger, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtService jwtService, ITwoFactorService twoFactorAuthService)
+    public AuthController(ILogger<AuthController> logger, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtService jwtService, ITwoFactorService twoFactorAuthService, INotificationService notificationService, MailNotificationsFactory mailNotificationsFactory, PushNotificationsFactory pushNotificationsFactory)
     {
         _logger = logger;
         _userManager = userManager;
         _signInManager = signInManager;
         _jwtService = jwtService;
         _twoFactorAuthService = twoFactorAuthService;
+        _notificationService = notificationService;
+        _mailNotificationsFactory = mailNotificationsFactory;
+        _pushNotificationsFactory = pushNotificationsFactory;
     }
     
     #endregion
@@ -123,9 +133,8 @@ public class AuthController : ControllerBase
             {
                 var code = _twoFactorAuthService.GenerateTwoFactorCode(user);
                 await _twoFactorAuthService.SendTwoFactorNotificationAsync(user, code);
-                
                 _logger.LogInformation("Two-factor authentication required for user {Username}", model.Username);
-                return Ok(new LoginResultDTO()
+                return Ok(new LoginResultResponse()
                 {
                     RequiresTwoFactorAuth = true,
                     Success = true
@@ -133,18 +142,14 @@ public class AuthController : ControllerBase
             }
             
             var accessToken = _jwtService.GenerateAccessToken(user);
-            var refreshToken = await _jwtService.GenerateRefreshTokenAsync(user);
             
             _logger.LogInformation("User logged in successfully: {Username}", model.Username);
-            return Ok(new LoginResultDTO()
+            await _signInManager.SignInAsync(user, false,"JWT");
+            return Ok(new LoginResultResponse()
             {
                 RequiresTwoFactorAuth = false,
                 Success = true,
-                Token = new RefreshTokenDTO()
-                {
-                    AccessToken = accessToken,
-                    RefreshToken = refreshToken.Token
-                }
+                Token = accessToken
             });
         }
         catch (Exception ex)
@@ -155,6 +160,71 @@ public class AuthController : ControllerBase
                 Code = 500,
                 Message = "An error occurred during user login"
             });
+        }
+    }
+
+    [HttpPost("verify-2fa")]
+    public async Task<IActionResult> VerifyTwoFactorCode([FromBody] TwoFactorDTO model)
+    {
+        try
+        {
+            if (model.Username != null)
+            {
+                var user = await _userManager.FindByNameAsync(model.Username);
+                if (user == null || !_twoFactorAuthService.ValidateTwoFactorCode(user, model.Code))
+                {
+                    return BadRequest(new BasicResponse()
+                    {
+                        Code = 400,
+                        Message = "Invalid code"
+                    });
+                }
+                
+                var token = _jwtService.GenerateAccessToken(user);
+                var refreshToken =  await _jwtService.GenerateRefreshTokenAsync(user);
+                await _signInManager.SignInAsync(user, false,"2FA");
+                return Ok( new LoginResultResponse()
+                {
+                    RequiresTwoFactorAuth = false,
+                    Success = true,
+                    Token = new RefreshTokenDTO()
+                    {
+                        AccessToken = token,
+                        RefreshToken = refreshToken.Token
+                    }
+                });
+            }
+            _logger.LogError("Username can't be empty");
+            return BadRequest(new BasicResponse()
+            {
+                Code = 400,
+                Message = "Username can't be empty"
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred during user verification: {Message}", ex.Message);
+            return StatusCode(500, new BasicResponse()
+            {
+                Code = 500,
+                Message = "An error occurred during user verification"
+            });
+        }
+    }
+
+
+    private async Task SendNotificationAsync(ApplicationUser user, 
+        string title,
+        string message, 
+        NotificationInformationType notificationInformationType)
+    {
+        try
+        {
+           await _notificationService.SendMailNotificationAsync(user, _mailNotificationsFactory.CreateNotification(notificationInformationType, title, message));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred during notification: {Message}", ex.Message);
         }
     }
     #endregion

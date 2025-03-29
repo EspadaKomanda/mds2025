@@ -1,6 +1,6 @@
 namespace MDSBackend.Models.DTO;
 
-public class LoginResultDTO
+public class LoginResultResponse
 {
     public bool? RequiresTwoFactorAuth { get; set; }
     public bool Success { get; set; }
