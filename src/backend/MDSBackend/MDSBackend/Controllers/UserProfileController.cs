@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MDSBackend.Controllers;
 
 [ApiController]
+[Route("api/[controller]")]
 public class UserProfileController : ControllerBase
 {
     private readonly IUserProfileService _userProfilesService;
@@ -34,7 +35,7 @@ public class UserProfileController : ControllerBase
     /// <returns>An <see cref="UserProfileDTO"/> containing the user profile DTO if found, or a 404 Not Found if not found.</returns>
     /// <response code="200">Returns the user profile DTO</response>
     /// <response code="404">If the user profile is not found</response>
-    [HttpGet]
+    [HttpGet("{id}")]
     public IActionResult GetUserProfileByUserId(long id)
     {
         try
@@ -55,7 +56,7 @@ public class UserProfileController : ControllerBase
     /// <returns>An <see cref="UserProfileDTO"/> containing the user profile DTO if found, or a 404 Not Found if not found.</returns>
     /// <response code="200">Returns the user profile DTO</response>
     /// <response code="404">If the user profile is not found</response>
-    [HttpGet]
+    [HttpGet("{id}")]
     public IActionResult GetUserProfileById(long id)
     {
         try
@@ -116,7 +117,7 @@ public class UserProfileController : ControllerBase
     /// <returns>A <see cref="bool"/></returns>
     /// <response code="200">Returns true.</response>
     /// <response code="404">If the user profile is not found</response>
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public IActionResult DeleteUserProfile(long id)
     {
         try
