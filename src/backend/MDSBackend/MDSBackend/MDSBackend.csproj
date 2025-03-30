@@ -8,8 +8,12 @@
     </PropertyGroup>
 
     <PropertyGroup>
-      <GenerateDocumentationFile>true</GenerateDocumentationFile>
-      <DocumentationFile>bin\Debug\net9.0\MDSBackend.xml</DocumentationFile>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DocumentationFile>bin\Debug\net9.0\MDSBackend.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <NoWarn>1591</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
