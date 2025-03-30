@@ -68,16 +68,17 @@ public class UserProfileController : ControllerBase
     /// <summary>
     /// Adds a new user profile.
     /// </summary>
+    /// <param name="userId">The ID of the user.</param>
     /// <param name="model">The user profile model.</param>
     /// <returns>A <see cref="UserProfileDTO"/> containing the created user profile if successful, or a 500 Internal Server Error if not successful.</returns>
-    /// <response code="201">Returns the created user profile</response>
-    [HttpPost]
+    /// <response code="200">Returns the created user profile</response>
+    [HttpPost("user/{userId}")]
     [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> AddUserProfile([FromBody] UserProfileDTO model)
+    public async Task<IActionResult> AddUserProfile(long userId, [FromBody] UserProfileCreateDTO model)
     {
         try
         {
-            var userProfile = await _userProfilesService.AddUserProfile(model);
+            var userProfile = await _userProfilesService.AddUserProfile(userId, model);
             return Ok(_mapper.Map<UserProfileDTO>(userProfile));
         }
         catch (ProfileNotFoundException)
@@ -92,14 +93,39 @@ public class UserProfileController : ControllerBase
     /// <param name="model">The user profile model.</param>
     /// <returns>A <see cref="UserProfileDTO"/> containing the updated user profile if successful, or a 500 Internal Server Error if not successful.</returns>
     /// <response code="200">Returns the updated user profile</response>
+    /// <response code="404">If the user profile is not found</response>
     [HttpPut]
-    public async Task<IActionResult> UpdateUserProfile([FromBody] UserProfileDTO model)
+    public async Task<IActionResult> UpdateUserProfile([FromBody] UserProfileCreateDTO model)
     {
-        // TODO: verify admin access / user ownership
+        var userId = long.Parse(User.Claims.FirstOrDefault(x => x.Type == "UserId")!.Value);
+        try
+        { 
+            bool result = await _userProfilesService.UpdateUserProfileByUserId(userId, model);
+            return Ok(result);
+        }
+        catch (ProfileNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    /// <summary>
+    /// Updates an existing user profile.
+    /// </summary>
+    /// <param name="userId">The ID of the user.</param>
+    /// <param name="model">The user profile model.</param>
+    /// <returns>A <see cref="UserProfileDTO"/> containing the updated user profile if successful, or a 500 Internal Server Error if not successful.</returns>
+    /// <response code="200">Returns the updated user profile</response>
+    /// <response code="404">If the user profile is not found</response>
+    [HttpPut]
+    [Authorize(Policy = "Admin")]
+    [Route("user/{userId}")]
+    public async Task<IActionResult> UpdateUserProfileByUserId(long userId, [FromBody] UserProfileCreateDTO model)
+    {
         try
         {
-            var userProfile = await _userProfilesService.UpdateUserProfile(model);
-            return Ok(_mapper.Map<UserProfileDTO>(userProfile));
+            bool result = await _userProfilesService.UpdateUserProfileByUserId(userId, model);
+            return Ok(result);
         }
         catch (ProfileNotFoundException)
         {

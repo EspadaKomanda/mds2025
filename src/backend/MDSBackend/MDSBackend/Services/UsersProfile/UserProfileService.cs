@@ -31,16 +31,15 @@ private readonly UnitOfWork _unitOfWork;
 
     # region Methods
 
-    public async Task<UserProfile> AddUserProfile(UserProfileDTO userProfile)
+    public async Task<UserProfileDTO> AddUserProfile(long userId, UserProfileCreateDTO userProfile)
     {
         UserProfile userProfileEntity = _mapper.Map<UserProfile>(userProfile);
-
-        return await AddUserProfile(userProfileEntity);
+        userProfileEntity.UserId = userId;
+        return _mapper.Map<UserProfileDTO>(await AddUserProfile(userProfileEntity));
     }
 
     public async Task<UserProfile> AddUserProfile(UserProfile userProfile)
     {
-
         UserProfile userProfileEntity = userProfile;
 
         // Make sure a user profile for the given user does not exist yet
@@ -71,9 +70,12 @@ private readonly UnitOfWork _unitOfWork;
         return _unitOfWork.UserProfileRepository.GetByID(id);
     }
 
-    public async Task<bool> UpdateUserProfile(UserProfileDTO userProfile)
+    public async Task<bool> UpdateUserProfileByUserId(long userId, UserProfileCreateDTO userProfile)
     {
         var userProfileEntityUpdated = _mapper.Map<UserProfile>(userProfile);
+        var profile = _unitOfWork.UserProfileRepository
+          .Get(x => x.UserId == userId).FirstOrDefault() ?? throw new ProfileNotFoundException($"{userId}");
+        userProfileEntityUpdated.Id = profile.Id;
         return await UpdateUserProfile(userProfileEntityUpdated);
     }
 
@@ -87,7 +89,6 @@ private readonly UnitOfWork _unitOfWork;
             throw new ProfileNotFoundException($"{userProfileEntityUpdated.Id}");   
         }
         
-        // TODO: make sure that the mapper will act as intended
         _mapper.Map(userProfileEntityUpdated, userProfileEntity);
 
         if (!await _unitOfWork.SaveAsync())

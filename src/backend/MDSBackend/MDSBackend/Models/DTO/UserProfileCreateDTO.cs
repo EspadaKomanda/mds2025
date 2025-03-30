@@ -3,13 +3,8 @@ using MDSBackend.Utils.Enums;
 
 namespace MDSBackend.Models.DTO;
 
-public class UserProfileDTO
+public class UserProfileCreateDTO
 {
-    [Required(ErrorMessage = "Id is required")]
-    public long? Id { get; set; }
-
-    public long? UserId { get; set; }
-
     [Required(ErrorMessage = "Name is required")]
     [StringLength(100, ErrorMessage = "Name must be less than 100 characters")]
     public string Name { get; set; } = null!;
