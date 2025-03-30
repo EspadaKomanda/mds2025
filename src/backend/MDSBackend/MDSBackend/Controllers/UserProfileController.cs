@@ -2,11 +2,13 @@ using AutoMapper;
 using MDSBackend.Exceptions.Services.ProfileService;
 using MDSBackend.Models.DTO;
 using MDSBackend.Services.UsersProfile;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MDSBackend.Controllers;
 
 [ApiController]
+[Authorize(Policy = "User")]
 [Route("api/[controller]")]
 public class UserProfileController : ControllerBase
 {
@@ -20,13 +22,6 @@ public class UserProfileController : ControllerBase
         _logger = logger;
         _mapper = mapper;
     }
-
-    // Service methods to be integrated
-    // public Task<UserProfile> AddUserProfile(UserProfileDTO userProfile);
-    // public UserProfile? GetUserProfileByUserId(long id);
-    // public UserProfile? GetUserProfileById(long id);
-    // public Task<bool> UpdateUserProfile(UserProfileDTO userProfile);
-    // public bool DeleteUserProfile(long id);
 
     /// <summary>
     /// Gets a user profile by its ID.
@@ -77,6 +72,7 @@ public class UserProfileController : ControllerBase
     /// <returns>A <see cref="UserProfileDTO"/> containing the created user profile if successful, or a 500 Internal Server Error if not successful.</returns>
     /// <response code="201">Returns the created user profile</response>
     [HttpPost]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> AddUserProfile([FromBody] UserProfileDTO model)
     {
         try
@@ -99,6 +95,7 @@ public class UserProfileController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateUserProfile([FromBody] UserProfileDTO model)
     {
+        // TODO: verify admin access / user ownership
         try
         {
             var userProfile = await _userProfilesService.UpdateUserProfile(model);
@@ -118,6 +115,7 @@ public class UserProfileController : ControllerBase
     /// <response code="200">Returns true.</response>
     /// <response code="404">If the user profile is not found</response>
     [HttpDelete("{id}")]
+    [Authorize(Policy = "Admin")]
     public IActionResult DeleteUserProfile(long id)
     {
         try

@@ -2,12 +2,14 @@ using AutoMapper;
 using MDSBackend.Exceptions.Services.InstructionTest;
 using MDSBackend.Models.DTO;
 using MDSBackend.Services.InstructionTests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MDSBackend.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize(Policy = "User")]
 public class InstructionTestController : ControllerBase
 {
     private readonly IInstructionTestsService _instructionTestsService;
@@ -31,6 +33,7 @@ public class InstructionTestController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult GetInstructionTestById(long id)
     {
+        // TODO: verify admin access / user ownership
         try
         {
             var instructionTest = _instructionTestsService.GetInstructionTestById(id);
@@ -52,6 +55,7 @@ public class InstructionTestController : ControllerBase
     [HttpGet("id}")]
     public IActionResult GetInstructionTestByInstructionId(long id)
     {
+        // TODO: verify adminaccess / user ownership
         // WARNING: The service method is not implemented at the time of writing this
         try
         {
@@ -74,6 +78,7 @@ public class InstructionTestController : ControllerBase
     [HttpGet]
     public IActionResult GetInstructionTestQuestionsByInstructionTestId(long instructionTestId)
     {
+        // TODO: verify admin access / user ownership
         try
         {
             var instructionTestQuestions = _instructionTestsService.GetInstructionTestQuestionsByInstructionTestId(instructionTestId);
@@ -96,6 +101,7 @@ public class InstructionTestController : ControllerBase
     [HttpGet("{instructionTestId}")]
     public IActionResult GetUserInstructionTestResultsByInstructionId(long userId, long instructionTestId)
     {
+        // TODO: verify admin access / user ownership 
         // XXX: userId from authentication or from admin request
         try
         {
@@ -118,6 +124,7 @@ public class InstructionTestController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult GetInstructionTestResultsByUserId(long id)
     {
+        // TODO: verify admin access / user ownership
         try
         {
             var instructionTestResults = _instructionTestsService.GetInstructionTestResultsByUserId(id);
@@ -139,6 +146,7 @@ public class InstructionTestController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult GetCompletedInstructionTestsByUserId(long id)
     {
+        // TODO: verify admin access / user ownership
         try
         {
             var instructionTestResults = _instructionTestsService.GetCompletedInstructionTestsByUserId(id);
@@ -177,6 +185,7 @@ public class InstructionTestController : ControllerBase
     /// <returns>A <see cref="InstructionTestDTO"/> containing the updated instruction test if successful, or a 500 Internal Server Error if not successful.</returns>
     /// <response code="200">Returns the updated instruction test</response>
     [HttpPut]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> UpdateInstructionTest([FromBody] InstructionTestCreateDTO model)
     {
         try
@@ -197,6 +206,7 @@ public class InstructionTestController : ControllerBase
     /// <returns>A <see cref="bool"/></returns>
     /// <response code="200">Returns the deletion status.</response>
     [HttpDelete("{id}")]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> DeleteInstructionTest(long id)
     {
         try
@@ -214,6 +224,7 @@ public class InstructionTestController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> SubmitInstructionTest(long userId,[FromBody] InstructionTestSubmissionDTO model)
     {
+        // TODO: verify user access
         try
         {
             await _instructionTestsService.SubmitInstructionTestAsync(userId, model);
