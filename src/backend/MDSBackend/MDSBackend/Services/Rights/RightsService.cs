@@ -42,7 +42,7 @@ public class RightsService : IRightsService
         throw new Exception($"Unable to create right for {rightName}");
     }
 
-    public async Task UpdateRightAsync(long rightId, string newRightName, string newDescription)
+    public async Task<bool> UpdateRightAsync(long rightId, string newRightName, string newDescription)
     {
         var right = await _unitOfWork.RightRepository.GetByIDAsync(rightId);
         
@@ -58,9 +58,11 @@ public class RightsService : IRightsService
         {
             throw new Exception($"Unable to create right for {rightId}");
         }
+        
+        return true;
     }
 
-    public async Task DeleteRightAsync(long rightId)
+    public async Task<bool> DeleteRightAsync(long rightId)
     {
         var right = await _unitOfWork.RightRepository.GetByIDAsync(rightId);
         
@@ -74,6 +76,8 @@ public class RightsService : IRightsService
         {
             throw new Exception($"Unable to delete right for {rightId}");
         }
+
+        return true;
     }
 
     public async Task<Right?> GetRightByIdAsync(long rightId)
@@ -87,7 +91,6 @@ public class RightsService : IRightsService
     
         var totalItems = await query.CountAsync();
     
-        // Apply pagination
         var pagedRights = await query
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)

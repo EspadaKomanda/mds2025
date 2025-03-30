@@ -1,14 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using MDSBackend.Utils.Enums;
 
 namespace MDSBackend.Models.DTO;
 
 public class UserProfileDTO
 {
-    [Required(ErrorMessage = "Id is required")]
-    public long Id { get; set; }
+    public long? Id { get; set; }
 
-    [Required(ErrorMessage = "UserId is required")]
-    public long UserId { get; set; }
+    public long? UserId { get; set; }
 
     [Required(ErrorMessage = "Name is required")]
     [StringLength(100, ErrorMessage = "Name must be less than 100 characters")]
@@ -23,6 +22,9 @@ public class UserProfileDTO
 
     [Required(ErrorMessage = "Birthdate is required")]
     public DateTime Birthdate { get; set; }
+
+    [Required(ErrorMessage = "Gender is required")]
+    public Gender Gender { get; set; }
 
     [EmailAddress(ErrorMessage = "Invalid email")]
     public string? ContactEmail { get; set; }

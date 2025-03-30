@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace MDSBackend.Database.Repositories;
 
@@ -46,6 +47,7 @@ public class GenericRepository<TEntity> where TEntity : class
     {
         return dbSet.Find(id);
     }
+    
     public async virtual Task<TEntity?> GetByIDAsync(object id)
     {
         return await dbSet.FindAsync(id);
@@ -53,6 +55,10 @@ public class GenericRepository<TEntity> where TEntity : class
     public virtual void Insert(TEntity entity)
     {
         dbSet.Add(entity);
+    }
+    public virtual void InsertRange(IEnumerable<TEntity> entities)
+    {
+        dbSet.AddRange(entities);
     }
     public async virtual Task InsertAsync(TEntity entity)
     {

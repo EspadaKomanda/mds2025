@@ -25,6 +25,7 @@ public class RolesService : IRolesService
     
     #region Methods
     //TODO: refactor database work, to be more beautiful
+    //ToDo: make better exception handling
     public async Task<ApplicationRole> CreateRoleAsync(string roleName, string description)
     {
         var role = new ApplicationRole(roleName)
@@ -40,7 +41,7 @@ public class RolesService : IRolesService
         throw new Exception("Unable to create role");
     }
 
-    public async Task UpdateRoleAsync(long roleId, string newRoleName, string newDescription)
+    public async Task<bool> UpdateRoleAsync(long roleId, string newRoleName, string newDescription)
     {
         var role = await _unitOfWork.RoleRepository.GetByIDAsync(roleId);
         
@@ -51,14 +52,16 @@ public class RolesService : IRolesService
         
         role.Name = newRoleName;
         role.Description = newDescription;
-
+    
         if (!await _unitOfWork.SaveAsync())
         {
             throw new Exception("Unable to create role");
         }
+
+        return true;
     }
 
-    public async Task DeleteRoleAsync(long roleId)
+    public async Task<bool> DeleteRoleAsync(long roleId)
     {
         var role = await _unitOfWork.RoleRepository.GetByIDAsync(roleId);
         
@@ -72,9 +75,11 @@ public class RolesService : IRolesService
         {
             throw new Exception("Unable to delete role");
         }
+        
+        return true;
     }
 
-    public async Task AddRightToRoleAsync(long roleId, long rightId)
+    public async Task<bool> AddRightToRoleAsync(long roleId, long rightId)
     {
         var role = await _unitOfWork.RoleRepository.Get()
             .Include(r => r.RoleRights)
@@ -97,10 +102,12 @@ public class RolesService : IRolesService
                 throw new Exception("Unable to add role right");
             }
         }
+        
+        return true;
     
     }
 
-    public async Task RemoveRightFromRoleAsync(long roleId, long rightId)
+    public async Task<bool> RemoveRightFromRoleAsync(long roleId, long rightId)
     {
         var roleRight = await _unitOfWork.RoleRightRepository.Get()
             .FirstOrDefaultAsync(rr => rr.RoleId == roleId && rr.RightId == rightId);
@@ -115,14 +122,25 @@ public class RolesService : IRolesService
         {
             throw new Exception("Unable to remove role right");
         }
+        
+        return true;
     }
 
     public async Task<ApplicationRole> GetRoleByIdAsync(long roleId)
     {
-        return await _unitOfWork.RoleRepository.Get()
-            .Include(r => r.RoleRights)
-            .ThenInclude(rr => rr.Right)
-            .FirstOrDefaultAsync(r => r.Id == roleId);
+        try
+        {
+            return await _unitOfWork.RoleRepository.Get()
+                .Include(r => r.RoleRights)
+                .ThenInclude(rr => rr.Right)
+                .FirstOrDefaultAsync(r => r.Id == roleId);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            throw;
+        }
+       
     }
 
     public async Task<(List<ApplicationRole> Roles, int TotalCount)> GetAllRolesAsync(int pageNumber = 1, int pageSize = 10)
