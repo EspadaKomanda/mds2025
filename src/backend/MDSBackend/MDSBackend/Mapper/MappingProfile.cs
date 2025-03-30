@@ -35,6 +35,16 @@ public class MappingProfile : Profile
             .ForMember(x => x.ContactPhone, opt => opt.MapFrom(src => src.ContactPhone))
             .ForMember(x => x.ProfilePicture, opt => opt.MapFrom(src => src.ProfilePicture));
 
+        CreateMap<UserProfileCreateDTO, UserProfile>()
+            .ForMember(x => x.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(x => x.Surname, opt => opt.MapFrom(src => src.Surname))
+            .ForMember(x => x.Patronymic, opt => opt.MapFrom(src => src.Patronymic))
+            .ForMember(x => x.Birthdate, opt => opt.MapFrom(src => src.Birthdate))
+            .ForMember(x => x.Gender, opt => opt.MapFrom(src => src.Gender))
+            .ForMember(x => x.ContactEmail, opt => opt.MapFrom(src => src.ContactEmail))
+            .ForMember(x => x.ContactPhone, opt => opt.MapFrom(src => src.ContactPhone))
+            .ForMember(x => x.ProfilePicture, opt => opt.MapFrom(src => src.ProfilePicture));
+
         #endregion
 
         #region InstructionTestMapping

@@ -5,7 +5,6 @@ namespace MDSBackend.Models.DTO;
 
 public class UserProfileDTO
 {
-    [Required(ErrorMessage = "Id is required")]
     public long? Id { get; set; }
 
     public long? UserId { get; set; }
