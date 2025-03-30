@@ -30,7 +30,7 @@ public class UserProfileController : ControllerBase
     /// <returns>An <see cref="UserProfileDTO"/> containing the user profile DTO if found, or a 404 Not Found if not found.</returns>
     /// <response code="200">Returns the user profile DTO</response>
     /// <response code="404">If the user profile is not found</response>
-    [HttpGet("{id}")]
+    [HttpGet("user/{id}")]
     public IActionResult GetUserProfileByUserId(long id)
     {
         try

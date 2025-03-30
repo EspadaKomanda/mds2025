@@ -70,6 +70,16 @@ public static class DatabaseExtensions
     }
 }
 
+public static class SwaggerExtensions
+{
+    public static IServiceCollection AddSwagger(this IServiceCollection services)
+    {
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
+        return services;
+    }
+}
+
 public static class JwtAuthExtensions
 {
     public static IServiceCollection AddJwtAuth(this IServiceCollection services, IConfiguration configuration)
