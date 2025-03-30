@@ -61,7 +61,6 @@ builder.Services.AddBackendServices();
 #endregion
 
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
 builder.Services.AddSwagger();
 
 var app = builder.Build();

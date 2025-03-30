@@ -30,7 +30,7 @@ public class InstructionTestController : ControllerBase
     /// <returns>An <see cref="InstructionTestDTO"/> containing the instruction test DTO if found, or a 404 Not Found if not found.</returns>
     /// <response code="200">Returns the instruction test DTO</response>
     /// <response code="404">If the instruction test is not found</response>
-    [HttpGet("InstructionTest/{id}")]
+    [HttpGet("{id}")]
     public IActionResult GetInstructionTestById(long id)
     {
         // TODO: verify admin access / user ownership
@@ -52,7 +52,7 @@ public class InstructionTestController : ControllerBase
     /// <returns>An <see cref="InstructionTestDTO"/> containing the instruction test DTO if found, or a 404 Not Found if not found.</returns>
     /// <response code="200">Returns the instruction test DTO</response>
     /// <response code="404">If the instruction test is not found</response>
-    [HttpGet("InstructionTest/Instruction/{id}")]
+    [HttpGet("instruction/{id}")]
     public IActionResult GetInstructionTestByInstructionId(long id)
     {
         // TODO: verify admin access / user ownership
@@ -75,7 +75,7 @@ public class InstructionTestController : ControllerBase
     /// <returns>A list of <see cref="InstructionTestQuestionDTO"/> containing the instruction test questions if found, or a 404 Not Found if not found.</returns>
     /// <response code="200">Returns the instruction test questions</response>
     /// <response code="404">If the instruction test questions are not found</response>
-    [HttpGet("instructionTest/{instructionTestId}/questions")]
+    [HttpGet("{instructionTestId}/questions")]
     public IActionResult GetInstructionTestQuestionsByInstructionTestId(long instructionTestId)
     {
         // TODO: verify admin access / user ownership
@@ -98,7 +98,7 @@ public class InstructionTestController : ControllerBase
     /// <returns>A list of <see cref="InstructionTestResultDTO"/> containing the instruction test results if found, or a 404 Not Found if not found.</returns>
     /// <response code="200">Returns the instruction test results</response>
     /// <response code="404">If the instruction test results are not found</response>
-    [HttpGet("instructionTest/instruction/{instructionTestId}/results")]
+    [HttpGet("/instruction/{instructionTestId}/results")]
     public IActionResult GetUserInstructionTestResultsByInstructionId(long instructionTestId)
     {
         // TODO: verify user ownership
@@ -115,7 +115,7 @@ public class InstructionTestController : ControllerBase
     }
 
     /// <summary>
-    /// Gets all instruction test results for a specific user by instruction ID (admin access).
+    /// Gets all instruction test results for a specific user by instruction test ID (admin access).
     /// </summary>
     /// <param name="userId">The ID of the user whose results are being requested.</param>
     /// <param name="instructionId">The ID of the instruction.</param>
@@ -123,7 +123,7 @@ public class InstructionTestController : ControllerBase
     /// <response code="200">Returns the instruction test results</response>
     /// <response code="404">If the instruction test results are not found</response>
     /// <response code="403">If the user is not an admin</response>
-    [HttpGet("admin/instructionTest/instruction/{instructionTestId}/user/{userId}/results")]
+    [HttpGet("/instruction/{instructionTestId}/user/{userId}/results")]
     [Authorize(Roles = "Admin")] // Ensure that only admins can access this method
     public IActionResult GetInstructionTestResultsForUserByInstructionId(long userId, long instructionTestId)
     {
@@ -146,7 +146,7 @@ public class InstructionTestController : ControllerBase
     /// <returns>A list of <see cref="InstructionTestResultDTO"/> containing the instruction test results if found, or a 404 Not Found if not found.</returns>
     /// <response code="200">Returns the instruction test results</response>
     /// <response code="404">If the instruction test results are not found</response>
-    [HttpGet("instructionTest/user/{id}/results")]
+    [HttpGet("user/{id}/results")]
     public IActionResult GetInstructionTestResultsByUserId(long id)
     {
         // TODO: verify admin access / user ownership
@@ -168,7 +168,7 @@ public class InstructionTestController : ControllerBase
     /// <returns>A list of <see cref="InstructionTestResultDTO"/> containing the instruction test results if found, or a 404 Not Found if not found.</returns>
     /// <response code="200">Returns the instruction test results</response>
     /// <response code="404">If the instruction test results are not found</response>
-    [HttpGet("instructionTest/user/{id}/completed")]
+    [HttpGet("user/{id}/completed")]
     public IActionResult GetCompletedInstructionTestsByUserId(long id)
     {
         // TODO: verify admin access / user ownership
@@ -189,7 +189,7 @@ public class InstructionTestController : ControllerBase
     /// <param name="model">The instruction test model.</param>
     /// <returns>A <see cref="InstructionTestDTO"/> containing the created instruction test if successful, or a 500 Internal Server Error if not successful.</returns>
     /// <response code="200">Returns the created instruction test</response>
-    [HttpPost("instructionTest")]
+    [HttpPost]
     public async Task<IActionResult> CreateInstructionTest([FromBody] InstructionTestCreateDTO model)
     {
         try
@@ -209,7 +209,7 @@ public class InstructionTestController : ControllerBase
     /// <param name="model">The instruction test model.</param>
     /// <returns>A <see cref="InstructionTestDTO"/> containing the updated instruction test if successful, or a 500 Internal Server Error if not successful.</returns>
     /// <response code="200">Returns the updated instruction test</response>
-    [HttpPut("instructionTest")]
+    [HttpPut]
     [Authorize(Policy = "Admin")]
     public async Task<IActionResult> UpdateInstructionTest([FromBody] InstructionTestCreateDTO model)
     {
@@ -230,7 +230,7 @@ public class InstructionTestController : ControllerBase
     /// <param name="id">The ID of the instruction test to delete.</param>
     /// <returns>A <see cref="bool"/></returns>
     /// <response code="200">Returns the deletion status.</response>
-    [HttpDelete("instructionTest/{id}")]
+    [HttpDelete("{id}")]
     [Authorize(Policy = "Admin")]
     public async Task<IActionResult> DeleteInstructionTest(long id)
     {
@@ -245,7 +245,7 @@ public class InstructionTestController : ControllerBase
         }
     }
 
-    [HttpPost("instructionTest/submit")]
+    [HttpPost("submit")]
     public async Task<IActionResult> SubmitInstructionTest([FromBody] InstructionTestSubmissionDTO model)
     {
         // TODO: verify user access

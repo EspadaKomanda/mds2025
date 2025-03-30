@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Mail;
+using System.Reflection;
 using System.Text;
 using MDSBackend.Database;
 using MDSBackend.Database.Repositories;
@@ -15,6 +16,7 @@ using MDSBackend.Utils.Factory;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
 
 namespace MDSBackend.Extensions;
@@ -74,8 +76,18 @@ public static class SwaggerExtensions
 {
     public static IServiceCollection AddSwagger(this IServiceCollection services)
     {
+        string projectName = Assembly.GetExecutingAssembly().GetName().Name;
+        services.AddOpenApi();
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = projectName, Version = "v1" });
+
+            // Set the comments path for the Swagger JSON and UI
+            var xmlFile = $"{projectName}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            c.IncludeXmlComments(xmlPath);
+        });
         return services;
     }
 }
