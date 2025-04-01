@@ -1,5 +1,4 @@
 using MDSBackend.Models.Database;
-using MDSBackend.Services.CurrentUsers;
 using MDSBackend.Database.Extensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

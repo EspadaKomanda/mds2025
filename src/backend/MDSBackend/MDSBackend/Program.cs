@@ -28,11 +28,6 @@ builder.Services.AddLogging();
 
 #endregion
 
-#region UtilServices
-
-builder.Services.AddUtilServices();
-
-#endregion
 
 #region SMTP
 
@@ -53,6 +48,11 @@ builder.Services.AddJwtAuth(builder.Configuration);
 
 #endregion
 
+#region UtilServices
+
+builder.Services.AddUtilServices();
+
+#endregion
 
 #region Services
 

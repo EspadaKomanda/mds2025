@@ -10,6 +10,9 @@ using MDSBackend.Services.Cookies;
 using MDSBackend.Services.CurrentUsers;
 using MDSBackend.Services.InstructionTests;
 using MDSBackend.Services.JWT;
+using MDSBackend.Services.NotificationService;
+using MDSBackend.Services.Rights;
+using MDSBackend.Services.Roles;
 using MDSBackend.Services.UsersProfile;
 using MDSBackend.Utils;
 using MDSBackend.Utils.Factory;
@@ -136,9 +139,12 @@ public static class UtilServicesExtensions
 {
     public static IServiceCollection AddUtilServices(this IServiceCollection services)
     {
-        services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<ICookieService, CookieService>();
+        services.AddScoped<INotificationService,NotificationService>();
+        services.AddScoped<IRightsService,RightsService>();
+        services.AddScoped<IRolesService, RolesService>();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
         return services;
     }
 }
