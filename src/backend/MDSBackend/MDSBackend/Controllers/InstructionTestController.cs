@@ -91,15 +91,14 @@ public class InstructionTestController : ControllerBase
     } 
 
     /// <summary>
-    /// Gets all instruction test results for a user by instruction ID.
+    /// Gets all instruction test results for authorized user by instruction ID.
     /// </summary>
-    /// <param name="userId">The ID of the user.</param>
-    /// <param name="instructionId">The ID of the instruction.</param>
+    /// <param name="instructionTestId">The ID of the instruction.</param>
     /// <returns>A list of <see cref="InstructionTestResultDTO"/> containing the instruction test results if found, or a 404 Not Found if not found.</returns>
     /// <response code="200">Returns the instruction test results</response>
     /// <response code="404">If the instruction test results are not found</response>
-    [HttpGet("/instruction/{instructionTestId}/results")]
-    public IActionResult GetUserInstructionTestResultsByInstructionId(long instructionTestId)
+    [HttpGet("/{instructionTestId}/results")]
+    public IActionResult GetUserInstructionTestResultsByInstructionTestId(long instructionTestId)
     {
         // TODO: verify user ownership
         long userId = long.Parse(User.Claims.First(c => c.Type == "id").Value);
@@ -118,14 +117,14 @@ public class InstructionTestController : ControllerBase
     /// Gets all instruction test results for a specific user by instruction test ID (admin access).
     /// </summary>
     /// <param name="userId">The ID of the user whose results are being requested.</param>
-    /// <param name="instructionId">The ID of the instruction.</param>
+    /// <param name="instructionTestId">The ID of the instruction.</param>
     /// <returns>A list of <see cref="InstructionTestResultDTO"/> containing the instruction test results if found, or a 404 Not Found if not found.</returns>
     /// <response code="200">Returns the instruction test results</response>
     /// <response code="404">If the instruction test results are not found</response>
     /// <response code="403">If the user is not an admin</response>
-    [HttpGet("/instruction/{instructionTestId}/user/{userId}/results")]
-    [Authorize(Roles = "Admin")] // Ensure that only admins can access this method
-    public IActionResult GetInstructionTestResultsForUserByInstructionId(long userId, long instructionTestId)
+    [HttpGet("{instructionTestId}/user/{userId}/results")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult GetInstructionTestResultsForUserByInstructionTestId(long userId, long instructionTestId)
     {
         try
         {
@@ -137,7 +136,6 @@ public class InstructionTestController : ControllerBase
             return NotFound();
         }
     }
-
 
     /// <summary>
     /// Gets all instruction test results for a user by user ID.
