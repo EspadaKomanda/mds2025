@@ -11,6 +11,8 @@ public class InstructionTestQuestion
   public InstructionTest InstructionTest { get; set; } = null!;
   public long InstructionTestId { get; set; }
 
+  public int Order { get; set; }
+
   public bool IsMultipleAnswer { get; set; }
 
   [Required(ErrorMessage = "Must have question text")]
