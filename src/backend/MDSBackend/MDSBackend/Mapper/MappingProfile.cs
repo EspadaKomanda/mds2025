@@ -52,10 +52,22 @@ public class MappingProfile : Profile
         CreateMap<Instruction, InstructionDTO>()
             .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(x => x.Title, opt => opt.MapFrom(src => src.Title))
+            .ForMember(x => x.Description, opt => opt.MapFrom(src => src.Description))
             .ForMember(x => x.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
             .ForMember(x => x.AssignDate, opt => opt.MapFrom(src => src.AssignDate))
             .ForMember(x => x.AssignDate, opt => opt.MapFrom(src => src.DeadlineDate));
-          
+         
+        #endregion
+
+        #region InstructionCreateMapping
+
+        CreateMap<InstructionCreateDTO, Instruction>()
+            .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(x => x.Title, opt => opt.MapFrom(src => src.Title))
+            .ForMember(x => x.Description, opt => opt.MapFrom(src => src.Description))
+            .ForMember(x => x.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
+            .ForMember(x => x.AssignDate, opt => opt.MapFrom(src => src.AssignDate))
+            .ForMember(x => x.DeadlineDate, opt => opt.MapFrom(src => src.DeadlineDate));
         #endregion
 
         #region InstructionParagraphMapping
@@ -70,9 +82,29 @@ public class MappingProfile : Profile
 
         #endregion
 
+        #region InstructionParagraphCreateMapping
+
+        CreateMap<InstructionParagraphCreateDTO, InstructionParagraph>()
+            .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(x => x.Text, opt => opt.MapFrom(src => src.Text))
+            .ForMember(x => x.InstructionId, opt => opt.MapFrom(src => src.InstructionId))
+            .ForMember(x => x.Order, opt => opt.MapFrom(src => src.Order))
+            .ForMember(x => x.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
+            .ForMember(x => x.VideoUrl, opt => opt.MapFrom(src => src.VideoUrl));
+
+        #endregion
+
         #region InstructionCategoryMapping
 
         CreateMap<InstructionCategory, InstructionCategoryDTO>()
+            .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(x => x.Title, opt => opt.MapFrom(src => src.Title));
+
+        #endregion
+
+        #region InstructionCategoryCreateMapping
+
+        CreateMap<InstructionCategoryCreateDTO, InstructionCategory>()
             .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(x => x.Title, opt => opt.MapFrom(src => src.Title));
 

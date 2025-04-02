@@ -16,8 +16,7 @@ public class Instruction
   [Required(ErrorMessage = "Category must be specified")]
   public InstructionCategory Category { get; set; } = null!;
 
-  [Required(ErrorMessage = "Assign date is required")]
-  public DateTime AssignDate { get; set; } = DateTime.UtcNow;
+  public DateTime? AssignDate { get; set; } = DateTime.UtcNow;
   
   public DateTime? DeadlineDate { get; set; }
 }
