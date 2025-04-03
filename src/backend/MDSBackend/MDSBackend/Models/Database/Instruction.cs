@@ -15,6 +15,11 @@ public class Instruction
   public long CategoryId { get; set; }
   [Required(ErrorMessage = "Category must be specified")]
   public InstructionCategory Category { get; set; } = null!;
+  
+  public virtual ICollection<InstructionParagraph> Paragraphs { get; set; }
+
+  public long? InstructionTestId { get; set; }
+  public InstructionTest? InstructionTest { get; set; }
 
   public DateTime? AssignDate { get; set; } = DateTime.UtcNow;
   

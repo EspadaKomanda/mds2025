@@ -9,7 +9,6 @@ public class InstructionParagraph
 
     public long InstructionId { get; set; }
     [Required(ErrorMessage = "Must be linked to instruction")]
-    public Instruction Instruction { get; set; } = null!;
 
     public int Order { get; set; }
 

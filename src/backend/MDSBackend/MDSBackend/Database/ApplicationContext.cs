@@ -19,7 +19,13 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser, Application
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<RoleRight> RoleRights { get; set; }
     public DbSet<UserProfile> UserProfiles { get; set; }
-    
+    public DbSet<Instruction> Instructions { get; set; }
+    public DbSet<InstructionCategory> InstructionCategories { get; set; }
+    public DbSet<InstructionParagraph> InstructionParagraphs { get; set; }
+    public DbSet<InstructionTest> InstructionTests { get; set; }
+    public DbSet<InstructionTestQuestion> InstructionTestQuestions { get; set; }
+    public DbSet<InstructionTestResult> InstructionTestResults { get; set; }
+   
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -29,5 +35,14 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser, Application
         
         modelBuilder.Entity<RoleRight>()
             .HasKey(rr => new { rr.RoleId, rr.RightId });
+
+        modelBuilder.Entity<InstructionTestResult>()
+            .HasOne(itr => itr.InstructionTest);
+
+        modelBuilder.Entity<Instruction>()
+            .HasOne(i => i.Category);
+
+        modelBuilder.Entity<Instruction>()
+            .HasMany(i => i.Paragraphs);
     }
 }
