@@ -12,6 +12,8 @@ public class InstructionTest
   [MaxLength(300, ErrorMessage = "Title cannot be longer than 300 characters")]
   public string? Title { get; set; }
 
+  public virtual ICollection<InstructionTestQuestion> Questions { get; set; }
+
   public int MaxAttempts { get; set; } = 10;
 
   public double MinScore { get; set; } = 0.6;
