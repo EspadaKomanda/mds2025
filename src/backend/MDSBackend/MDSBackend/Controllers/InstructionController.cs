@@ -1,7 +1,9 @@
 using MDSBackend.Exceptions.Services.Instruction;
+using MDSBackend.Models.Database;
 using MDSBackend.Models.DTO;
 using MDSBackend.Services.Instructions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MDSBackend.Controllers;
@@ -12,11 +14,13 @@ namespace MDSBackend.Controllers;
 public class InstructionController : ControllerBase 
 {
     private readonly IInstructionService _instructionService;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<InstructionController> _logger;
 
-    public InstructionController(IInstructionService instructionService, ILogger<InstructionController> logger)
+    public InstructionController(IInstructionService instructionService, UserManager<ApplicationUser> userManager, ILogger<InstructionController> logger)
     {
       _instructionService = instructionService;
+      _userManager = userManager;
       _logger = logger;
     }
 
@@ -77,9 +81,11 @@ public class InstructionController : ControllerBase
     /// <returns>A list of <see cref="InstructionDTO"/> for the user.</returns>
     /// <response code="200">Returns the list of all instructions</response>
     [HttpGet("all")]
-    public IActionResult GetAllInstructions()
+    public async Task<IActionResult> GetAllInstructions()
     {
-        long userId = long.Parse(User.Claims.First(c => c.Type == "id").Value);
+        string username = User.Claims.First(c => c.Type == "username").Value;
+        long userId = (await _userManager.FindByNameAsync(username))!.Id;
+
         return Ok(_instructionService.GetAllInstructions(userId));
     }
 
@@ -89,9 +95,11 @@ public class InstructionController : ControllerBase
     /// <returns>A list of <see cref="InstructionDTO"/> that are completed for the user.</returns>
     /// <response code="200">Returns the list of completed instructions</response>
     [HttpGet("completed")]
-    public IActionResult GetCompletedInstructions()
+    public async Task<IActionResult> GetCompletedInstructions()
     {
-        long userId = long.Parse(User.Claims.First(c => c.Type == "id").Value);
+        string username = User.Claims.First(c => c.Type == "username").Value;
+        long userId = (await _userManager.FindByNameAsync(username))!.Id;
+
         return Ok(_instructionService.GetCompletedInstructions(userId));
     }
 
@@ -101,9 +109,11 @@ public class InstructionController : ControllerBase
     /// <returns>A list of <see cref="InstructionDTO"/> that are unfinished for the user.</returns>
     /// <response code="200">Returns the list of unfinished instructions</response>
     [HttpGet("unfinished")]
-    public IActionResult GetUnfinishedInstructions()
+    public async Task<IActionResult> GetUnfinishedInstructions()
     {
-        long userId = long.Parse(User.Claims.First(c => c.Type == "id").Value);
+        string username = User.Claims.First(c => c.Type == "username").Value;
+        long userId = (await _userManager.FindByNameAsync(username))!.Id;
+
         return Ok(_instructionService.GetUnfinishedInstructions(userId));
     }
 
@@ -115,11 +125,13 @@ public class InstructionController : ControllerBase
     /// <response code="200">Returns the list of instructions for the specified category</response>
     /// <response code="404">If the category is not found</response>
     [HttpGet("category/{id}")]
-    public IActionResult GetInstructionsByCategoryId(long id)
+    public async Task<IActionResult> GetInstructionsByCategoryId(long id)
     {
         try
         {
-            long userId = long.Parse(User.Claims.First(c => c.Type == "id").Value);
+            string username = User.Claims.First(c => c.Type == "username").Value;
+            long userId = (await _userManager.FindByNameAsync(username))!.Id;
+
             return Ok(_instructionService.GetInstructionsByCategoryId(userId, id));
         }
         catch (CategoryNotFoundException)
@@ -136,11 +148,13 @@ public class InstructionController : ControllerBase
     /// <response code="200">Returns the instruction with the specified ID</response>
     /// <response code="404">If the instruction is not found</response>
     [HttpGet("{id}")]
-    public IActionResult GetInstructionById(long id)
+    public async Task<IActionResult> GetInstructionById(long id)
     {
         try 
         {
-            long userId = long.Parse(User.Claims.First(c => c.Type == "id").Value);
+            string username = User.Claims.First(c => c.Type == "username").Value;
+            long userId = (await _userManager.FindByNameAsync(username))!.Id;
+
             return Ok(_instructionService.GetInstructionById(userId, id));
         }
         catch(InstructionNotFoundException)
