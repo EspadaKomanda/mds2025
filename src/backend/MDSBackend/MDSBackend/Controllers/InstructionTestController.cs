@@ -192,7 +192,7 @@ public class InstructionTestController : ControllerBase
     {
         try
         {
-            var instructionTest = await _instructionTestsService.CreateInstructionTestAsync(model);
+            var instructionTest = await _instructionTestsService.CreateInstructionTest(model);
             return Ok(instructionTest);
         }
         catch (Exception)
@@ -213,7 +213,7 @@ public class InstructionTestController : ControllerBase
     {
         try
         {
-            var instructionTest = await _instructionTestsService.UpdateInstructionTestAsync(model);
+            var instructionTest = await _instructionTestsService.UpdateInstructionTest(model);
             return Ok(instructionTest);
         }
         catch (Exception)

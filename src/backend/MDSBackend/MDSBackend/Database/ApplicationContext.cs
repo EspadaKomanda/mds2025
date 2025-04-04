@@ -1,5 +1,4 @@
 using MDSBackend.Models.Database;
-using MDSBackend.Database.Extensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,6 +34,9 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser, Application
         
         modelBuilder.Entity<RoleRight>()
             .HasKey(rr => new { rr.RoleId, rr.RightId });
+
+        modelBuilder.Entity<InstructionTest>()
+            .HasMany(itq => itq.Questions);
 
         modelBuilder.Entity<InstructionTestResult>()
             .HasOne(itr => itr.InstructionTest);

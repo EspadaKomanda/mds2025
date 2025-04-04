@@ -119,6 +119,16 @@ public class InstructionService : IInstructionService
         {
             throw new InstructionNotFoundException();          
         }
+        
+        await _unitOfWork.BeginTransactionAsync();
+
+        _unitOfWork.InstructionParagraphRepository.DeleteRange(existingInstruction.Paragraphs);
+
+        if (await _unitOfWork.SaveAsync() == false)
+        {
+            _logger.LogError($"Failure to delete older paragraphs for instruction {model.Id} during update");
+            throw new InstructionUpdateException();
+        }
 
         _unitOfWork.InstructionRepository.Update(model);
         if (await _unitOfWork.SaveAsync() == false)
