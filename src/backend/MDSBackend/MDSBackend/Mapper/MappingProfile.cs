@@ -46,7 +46,19 @@ public class MappingProfile : Profile
             .ForMember(x => x.ProfilePicture, opt => opt.MapFrom(src => src.ProfilePicture));
 
         #endregion
-        
+  
+        #region InstructionParagraphMapping
+
+        CreateMap<InstructionParagraph, InstructionParagraphDTO>()
+            .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(x => x.Text, opt => opt.MapFrom(src => src.Id))
+            .ForMember(x => x.InstructionId, opt => opt.MapFrom(src => src.InstructionId))
+            .ForMember(x => x.Order, opt => opt.MapFrom(src => src.Order))
+            .ForMember(x => x.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
+            .ForMember(x => x.VideoUrl, opt => opt.MapFrom(src => src.VideoUrl));
+
+        #endregion
+
         #region InstructionMapping
 
         CreateMap<Instruction, InstructionDTO>()
@@ -65,21 +77,10 @@ public class MappingProfile : Profile
             .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(x => x.Title, opt => opt.MapFrom(src => src.Title))
             .ForMember(x => x.Description, opt => opt.MapFrom(src => src.Description))
+            .ForMember(x => x.Paragraphs, opt => opt.MapFrom(src => src.Paragraphs))
             .ForMember(x => x.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
             .ForMember(x => x.AssignDate, opt => opt.MapFrom(src => src.AssignDate))
             .ForMember(x => x.DeadlineDate, opt => opt.MapFrom(src => src.DeadlineDate));
-        #endregion
-
-        #region InstructionParagraphMapping
-
-        CreateMap<InstructionParagraph, InstructionParagraphDTO>()
-            .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(x => x.Text, opt => opt.MapFrom(src => src.Id))
-            .ForMember(x => x.InstructionId, opt => opt.MapFrom(src => src.InstructionId))
-            .ForMember(x => x.Order, opt => opt.MapFrom(src => src.Order))
-            .ForMember(x => x.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
-            .ForMember(x => x.VideoUrl, opt => opt.MapFrom(src => src.VideoUrl));
-
         #endregion
 
         #region InstructionParagraphCreateMapping

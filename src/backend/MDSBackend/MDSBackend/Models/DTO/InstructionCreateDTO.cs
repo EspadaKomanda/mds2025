@@ -11,6 +11,9 @@ public class InstructionCreateDTO
 
   public string? Description { get; set; }
 
+  [Required(ErrorMessage = "Paragraphs are required")]
+  public List<InstructionParagraphDTO> Paragraphs { get; set; } = null!;
+
   [Required(ErrorMessage = "Category id is required")]
   public long CategoryId { get; set; }
 

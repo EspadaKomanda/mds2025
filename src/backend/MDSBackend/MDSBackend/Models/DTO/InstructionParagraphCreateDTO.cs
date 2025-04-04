@@ -6,6 +6,8 @@ public class InstructionParagraphCreateDTO
 {
     public long? Id { get; set; }
 
+    public long? InstructionId { get; set; }
+
     /// <summary>
     /// Order defines the order of the paragraphs inside the instruction.
     /// There must not be two paragraphs with the same order.

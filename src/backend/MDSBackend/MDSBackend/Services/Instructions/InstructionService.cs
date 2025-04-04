@@ -24,18 +24,19 @@ public class InstructionService : IInstructionService
 
     public async Task<Instruction> CreateInstruction(Instruction model)
     {
-        Instruction? existingInstruction = _unitOfWork.InstructionRepository.GetByID(model.Id);
-        if (existingInstruction != null)
-        {
-           throw new InstructionNotFoundException();
-        }
+        model.Id = 0;
+
+        await _unitOfWork.BeginTransactionAsync();
 
         await _unitOfWork.InstructionRepository.InsertAsync(model);
+
         if(await _unitOfWork.SaveAsync() == false)
         {
             _logger.LogError($"Instruction {model.Id} could not be created");
             throw new InstructionCreationException();
         }
+
+        await _unitOfWork.CommitAsync();
 
         _logger.LogInformation($"Instruction {model.Id} created");
         return model;
