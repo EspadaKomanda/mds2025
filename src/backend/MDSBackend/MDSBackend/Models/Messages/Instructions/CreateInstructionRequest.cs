@@ -5,8 +5,6 @@ namespace MDSBackend.Models.Messages.Instructions;
 
 public class CreateInstructionRequest
 {
-    public long? Id { get; set; }
-
     [Required(ErrorMessage = "Title is required")]
     public string Title { get; set; } = null!;
 
@@ -36,5 +34,4 @@ public class CreateInstructionRequest
     /// Tests for such instructions cannot be submitted either.
     /// </summary>
     public bool IsEnabled { get; set; } = false;
-      
 }

@@ -11,7 +11,7 @@ public interface IInstructionService
     public Task<bool> DeleteInstructionById(long instructionId);
 
     public Task<InstructionDTO> CreateInstruction(CreateInstructionRequest model);
-    public Task<bool> UpdateInstructionById(InstructionCreateDTO model);
+    public Task<bool> UpdateInstructionById(UpdateInstructionRequest model);
 
     public List<InstructionDTO> GetAllInstructions(long userId);
     public List<InstructionDTO> GetInstructionsByCategoryId(long userId, long categoryId);

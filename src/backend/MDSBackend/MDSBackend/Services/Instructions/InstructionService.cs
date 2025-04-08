@@ -152,8 +152,23 @@ public class InstructionService : IInstructionService
         return true;
     }
 
-    public async Task<bool> UpdateInstructionById(InstructionCreateDTO model)
+    public async Task<bool> UpdateInstructionById(UpdateInstructionRequest model)
     {
+        Instruction? existingInstruction = _unitOfWork.InstructionRepository.GetByID(model.Id);
+
+        if (existingInstruction == null)
+        {
+            throw new InstructionNotFoundException();
+        }
+
+        existingInstruction.Title = model.Title;
+        existingInstruction.Description = model.Description;
+        existingInstruction.CategoryId = model.CategoryId;
+        existingInstruction.Paragraphs = _mapper.Map<List<InstructionParagraph>>(model.Paragraphs);
+        existingInstruction.AssignDate = model.AssignDate;
+        existingInstruction.DeadlineDate = model.DeadlineDate;
+        existingInstruction.IsEnabled = model.IsEnabled;
+
         return await UpdateInstructionById(_mapper.Map<Instruction>(model));
     }
 }
