@@ -3,6 +3,7 @@ using MDSBackend.Database.Repositories;
 using MDSBackend.Exceptions.Services.Instruction;
 using MDSBackend.Models.Database;
 using MDSBackend.Models.DTO;
+using MDSBackend.Models.Messages.Instructions;
 using MDSBackend.Services.InstructionTests;
 
 namespace MDSBackend.Services.Instructions;
@@ -42,9 +43,20 @@ public class InstructionService : IInstructionService
         return model;
     }
 
-    public async Task<InstructionDTO> CreateInstruction(InstructionCreateDTO model)
+    public async Task<InstructionDTO> CreateInstruction(CreateInstructionRequest model)
     {
-        return _mapper.Map<InstructionDTO>(await CreateInstruction(_mapper.Map<Instruction>(model)));
+        Instruction newInstruction = new Instruction()
+        {
+            Title = model.Title,
+            Description = model.Description,
+            CategoryId = model.CategoryId,
+            Paragraphs = _mapper.Map<List<InstructionParagraph>>(model.Paragraphs),
+            AssignDate = model.AssignDate,
+            DeadlineDate = model.DeadlineDate,
+            IsEnabled = model.IsEnabled
+        };
+
+        return _mapper.Map<InstructionDTO>(await CreateInstruction(newInstruction));
     }
 
     public async Task<bool> DeleteInstructionById(long instructionId)

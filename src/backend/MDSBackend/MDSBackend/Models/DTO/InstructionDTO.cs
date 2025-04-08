@@ -13,5 +13,7 @@ public class InstructionDTO
   public DateTime? AssignDate { get; set; }
   
   public DateTime? DeadlineDate { get; set; }
+
+  public bool IsEnabled { get; set; }
 }
 

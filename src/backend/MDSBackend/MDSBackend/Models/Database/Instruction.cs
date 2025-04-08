@@ -24,4 +24,6 @@ public class Instruction
   public DateTime? AssignDate { get; set; } = DateTime.UtcNow;
   
   public DateTime? DeadlineDate { get; set; }
+
+  public bool IsEnabled { get; set; }
 }

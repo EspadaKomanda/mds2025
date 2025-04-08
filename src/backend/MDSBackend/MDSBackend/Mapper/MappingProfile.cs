@@ -68,7 +68,8 @@ public class MappingProfile : Profile
             .ForMember(x => x.Description, opt => opt.MapFrom(src => src.Description))
             .ForMember(x => x.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
             .ForMember(x => x.AssignDate, opt => opt.MapFrom(src => src.AssignDate))
-            .ForMember(x => x.AssignDate, opt => opt.MapFrom(src => src.DeadlineDate));
+            .ForMember(x => x.AssignDate, opt => opt.MapFrom(src => src.DeadlineDate))
+            .ForMember(x => x.IsEnabled, opt => opt.MapFrom(src => src.IsEnabled));
          
         #endregion
 
@@ -81,7 +82,8 @@ public class MappingProfile : Profile
             .ForMember(x => x.Paragraphs, opt => opt.MapFrom(src => src.Paragraphs))
             .ForMember(x => x.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
             .ForMember(x => x.AssignDate, opt => opt.MapFrom(src => src.AssignDate))
-            .ForMember(x => x.DeadlineDate, opt => opt.MapFrom(src => src.DeadlineDate));
+            .ForMember(x => x.DeadlineDate, opt => opt.MapFrom(src => src.DeadlineDate))
+            .ForMember(x => x.IsEnabled, opt => opt.MapFrom(src => src.IsEnabled));
         #endregion
 
         #region InstructionParagraphCreateMapping
