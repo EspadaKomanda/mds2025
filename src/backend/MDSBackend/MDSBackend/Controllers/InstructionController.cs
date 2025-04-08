@@ -1,6 +1,7 @@
 using MDSBackend.Exceptions.Services.Instruction;
 using MDSBackend.Models.Database;
 using MDSBackend.Models.DTO;
+using MDSBackend.Models.Messages.Instructions;
 using MDSBackend.Services.Instructions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -32,9 +33,8 @@ public class InstructionController : ControllerBase
     /// <response code="200">Returns the created instruction</response>
     [HttpPost]
     [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> CreateInstruction([FromBody] InstructionCreateDTO model) 
+    public async Task<IActionResult> CreateInstruction([FromBody] CreateInstructionRequest model) 
     {
-        model.Id = 0;
         var instruction = await _instructionService.CreateInstruction(model);
         return Ok(instruction);
     }
@@ -48,7 +48,7 @@ public class InstructionController : ControllerBase
     /// <response code="404">If the instruction is not found</response>
     [HttpPut]
     [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> UpdateInstruction([FromBody] InstructionCreateDTO model) 
+    public async Task<IActionResult> UpdateInstruction([FromBody] UpdateInstructionRequest model) 
     {
         var instruction = await _instructionService.UpdateInstructionById(model);
         return Ok(instruction);
