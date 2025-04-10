@@ -1,4 +1,5 @@
 using AutoMapper;
+using MDSBackend.Exceptions.Services.Instruction;
 using MDSBackend.Exceptions.Services.InstructionTest;
 using MDSBackend.Models.Database;
 using MDSBackend.Models.DTO;
@@ -55,12 +56,11 @@ public class InstructionTestController : ControllerBase
     /// <param name="id">The ID of the instruction.</param>
     /// <returns>An <see cref="InstructionTestDTO"/> containing the instruction test DTO if found, or a 404 Not Found if not found.</returns>
     /// <response code="200">Returns the instruction test DTO</response>
-    /// <response code="404">If the instruction test is not found</response>
+    /// <response code="404">If the instruction is not found</response>
     [HttpGet("instruction/{id}")]
-    public IActionResult GetInstructionTestByInstructionId(long id)
+    public IActionResult GetInstructionTestsByInstructionId(long id)
     {
         // TODO: verify admin access / user ownership
-        // WARNING: The service method is not implemented at the time of writing this
         try
         {
             var instructionTest = _instructionTestsService.GetInstructionTestsByInstructionId(id);
@@ -68,7 +68,11 @@ public class InstructionTestController : ControllerBase
         }
         catch (InstructionTestNotFoundException)
         {
-            return NotFound();
+            return Ok(new List<InstructionTestDTO>());
+        }
+        catch (InstructionNotFoundException)
+        {
+            return NotFound("Instruction not found");
         }
     }
 

@@ -1,5 +1,6 @@
 using AutoMapper;
 using MDSBackend.Database.Repositories;
+using MDSBackend.Exceptions.Services.Instruction;
 using MDSBackend.Exceptions.Services.InstructionTest;
 using MDSBackend.Models.Database;
 using MDSBackend.Models.DTO;
@@ -128,8 +129,11 @@ public class InstructionTestsService : IInstructionTestsService
 
     public List<InstructionTestDTO> GetInstructionTestsByInstructionId(long instructionId)
     {
-        // TODO: InstructionService must be implemented first
-        throw new NotImplementedException();
+        var instructionTest = (_unitOfWork.InstructionRepository.GetByID(instructionId)
+            ?? throw new InstructionNotFoundException())
+          .InstructionTest ?? throw new InstructionTestNotFoundException();
+
+        return _mapper.Map<List<InstructionTestDTO>>(new List<InstructionTest>() {instructionTest});
     }
 
     public async Task<InstructionTestResultDTO> SubmitInstructionTestAsync(long userId, InstructionTestSubmissionDTO submission)
