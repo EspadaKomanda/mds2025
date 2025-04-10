@@ -8,6 +8,8 @@ public class InstructionDTO
 
   public string? Description { get; set; }
 
+  public List<InstructionParagraphDTO> Paragraphs { get; set; } = new List<InstructionParagraphDTO>();
+
   public long? CategoryId { get; set; }
 
   public DateTime? AssignDate { get; set; }

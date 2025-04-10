@@ -61,7 +61,6 @@ public class MappingProfile : Profile
 
         #region InstructionMapping
 
-        // TODO: paragraphs
         CreateMap<Instruction, InstructionDTO>()
             .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(x => x.Title, opt => opt.MapFrom(src => src.Title))
@@ -69,7 +68,8 @@ public class MappingProfile : Profile
             .ForMember(x => x.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
             .ForMember(x => x.AssignDate, opt => opt.MapFrom(src => src.AssignDate))
             .ForMember(x => x.AssignDate, opt => opt.MapFrom(src => src.DeadlineDate))
-            .ForMember(x => x.IsEnabled, opt => opt.MapFrom(src => src.IsEnabled));
+            .ForMember(x => x.IsEnabled, opt => opt.MapFrom(src => src.IsEnabled))
+            .ForMember(x => x.Paragraphs, opt => opt.MapFrom(src => src.Paragraphs));
          
         #endregion
 
@@ -124,13 +124,13 @@ public class MappingProfile : Profile
             .ForMember(x => x.MinScore, opt => opt.MapFrom(src => src.MinScore))
             .ForMember(x => x.MaxAttempts, opt => opt.MapFrom(src => src.MaxAttempts));
        
-        // TODO: questions
         CreateMap<InstructionTest, InstructionTestDTO>()
             .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(x => x.Title, opt => opt.MapFrom(src => src.Title))
             .ForMember(x => x.ScoreCalcMethod, opt => opt.MapFrom(src => src.ScoreCalcMethod))
             .ForMember(x => x.MinScore, opt => opt.MapFrom(src => src.MinScore))
-            .ForMember(x => x.MaxAttempts, opt => opt.MapFrom(src => src.MaxAttempts));
+            .ForMember(x => x.MaxAttempts, opt => opt.MapFrom(src => src.MaxAttempts))
+            .ForMember(x => x.Questions, opt => opt.MapFrom(src => src.Questions));
 
         #endregion
 
