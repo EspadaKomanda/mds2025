@@ -1,6 +1,7 @@
 using AutoMapper;
 using MDSBackend.Exceptions.Services.Instruction;
 using MDSBackend.Exceptions.Services.InstructionTest;
+using MDSBackend.Models.BasicResponses;
 using MDSBackend.Models.Database;
 using MDSBackend.Models.DTO;
 using MDSBackend.Services.InstructionTests;
@@ -72,7 +73,11 @@ public class InstructionTestController : ControllerBase
         }
         catch (InstructionNotFoundException)
         {
-            return NotFound("Instruction not found");
+            return NotFound(new BasicResponse()
+            {
+                Code = 404,
+                Message = "Instruction not found"
+            });
         }
     }
 
