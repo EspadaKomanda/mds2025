@@ -15,6 +15,8 @@ public class InstructionTestDTO
 
   public double MinScore { get; set; } = 0.6;
 
+  public List<InstructionTestQuestionDTO> Questions { get; set; } = new List<InstructionTestQuestionDTO>();
+
   public InstructionTestScoreCalcMethod ScoreCalcMethod { get; set; } = InstructionTestScoreCalcMethod.MaxGrade;
 
 } 

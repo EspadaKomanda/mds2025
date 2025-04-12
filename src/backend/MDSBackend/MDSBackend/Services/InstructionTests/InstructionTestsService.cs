@@ -1,5 +1,6 @@
 using AutoMapper;
 using MDSBackend.Database.Repositories;
+using MDSBackend.Exceptions.Services.Instruction;
 using MDSBackend.Exceptions.Services.InstructionTest;
 using MDSBackend.Models.Database;
 using MDSBackend.Models.DTO;
@@ -20,32 +21,10 @@ public class InstructionTestsService : IInstructionTestsService
         _mapper = mapper;
     }
 
-    public async Task<InstructionTestDTO> CreateInstructionTestAsync(InstructionTestCreateDTO instructionTest)
+    public async Task<InstructionTestDTO> CreateInstructionTest(InstructionTestCreateDTO instructionTest)
     {
-        await _unitOfWork.BeginTransactionAsync();
-        // Instruction test creation
-        InstructionTest newInstructionTest = _mapper.Map<InstructionTest>(instructionTest);
-        await _unitOfWork.InstructionTestRepository.InsertAsync(newInstructionTest);
-
-        if (!await _unitOfWork.SaveAsync())
-        {
-            throw new InstructionTestCreationException("Failed to save instruction test");
-        }
-
-        // Adding questions using InsertRange
-        List<InstructionTestQuestion> newQuestions = _mapper.Map<List<InstructionTestQuestion>>(instructionTest.Questions);
-        newQuestions.ForEach(q => q.InstructionTestId = newInstructionTest.Id);
-        _unitOfWork.InstructionTestQuestionRepository.InsertRange(newQuestions);
-
-        if (await _unitOfWork.SaveAsync())
-        {
-            await _unitOfWork.CommitAsync();
-            _logger.LogInformation("Instruction test created ({Id})", newInstructionTest.Id);
-            return _mapper.Map<InstructionTestDTO>(newInstructionTest);
-        }
-
-        throw new InstructionTestCreationException($"Failed to add questions to instruction test {newInstructionTest.Id}");
-      }
+        return _mapper.Map<InstructionTestDTO>(await CreateInstructionTest(_mapper.Map<InstructionTest>(instructionTest)));
+    }
 
     public async Task<bool> DeleteInstructionTestByIdAsync(long id)
     {
@@ -150,8 +129,11 @@ public class InstructionTestsService : IInstructionTestsService
 
     public List<InstructionTestDTO> GetInstructionTestsByInstructionId(long instructionId)
     {
-        // TODO: InstructionService must be implemented first
-        throw new NotImplementedException();
+        var instructionTest = (_unitOfWork.InstructionRepository.GetByID(instructionId)
+            ?? throw new InstructionNotFoundException())
+          .InstructionTest ?? throw new InstructionTestNotFoundException();
+
+        return _mapper.Map<List<InstructionTestDTO>>(new List<InstructionTest>() {instructionTest});
     }
 
     public async Task<InstructionTestResultDTO> SubmitInstructionTestAsync(long userId, InstructionTestSubmissionDTO submission)
@@ -254,24 +236,59 @@ public class InstructionTestsService : IInstructionTestsService
         return _mapper.Map<InstructionTestResultDTO>(newTestResult);
     }
 
-    public async Task<bool> UpdateInstructionTestAsync(InstructionTestCreateDTO instructionTest)
+    public async Task<bool> UpdateInstructionTest(InstructionTestCreateDTO instructionTest)
     {
-        if (instructionTest == null)
+        return await UpdateInstructionTest(_mapper.Map<InstructionTest>(instructionTest));
+    }
+
+    public async Task<InstructionTest> CreateInstructionTest(InstructionTest instructionTest)
+    {
+        instructionTest.Id = 0;
+
+        await _unitOfWork.BeginTransactionAsync();
+
+        await _unitOfWork.InstructionTestRepository.InsertAsync(instructionTest);
+
+        if (await _unitOfWork.SaveAsync() == false)
         {
-            _logger.LogWarning("Instruction test id was not provided for update.");
+            _logger.LogError("Failure to create instruction test");
+            throw new InstructionTestCreationException();
+        }
+
+        await _unitOfWork.CommitAsync();
+
+        _logger.LogInformation($"Created instruction test {instructionTest.Id}");
+        return instructionTest;
+    }
+
+    public async Task<bool> UpdateInstructionTest(InstructionTest instructionTest)
+    {
+        var existingInstructionTest = _unitOfWork.InstructionTestRepository.GetByID(instructionTest.Id);
+        if (existingInstructionTest == null)
+        {
             throw new InstructionTestNotFoundException();
         }
-        var oldInstructionTest = _unitOfWork.InstructionTestRepository.GetByID(instructionTest.Id!);
 
-        if (oldInstructionTest == null)
+        await _unitOfWork.BeginTransactionAsync();
+
+        _unitOfWork.InstructionTestQuestionRepository.DeleteRange(existingInstructionTest.Questions);
+
+        if (await _unitOfWork.SaveAsync() == false)
         {
-            _logger.LogWarning("Instruction test with id {Id} not found for update", instructionTest.Id);
-            throw new InstructionTestNotFoundException();
+            _logger.LogError($"Failure to create existing questions for instruction test {instructionTest.Id} during update");
+            throw new InstructionTestCreationException();
         }
 
-        _mapper.Map(instructionTest, oldInstructionTest);
-        _unitOfWork.InstructionTestRepository.Update(oldInstructionTest);
-        return await _unitOfWork.SaveAsync();
+        _unitOfWork.InstructionTestRepository.Update(instructionTest);
+
+        if (await _unitOfWork.SaveAsync() == false)
+        {
+            _logger.LogError($"Failure to update instruction test {instructionTest.Id}");
+        }
+
+        await _unitOfWork.CommitAsync();
+
+        return true;
     }
 }
 

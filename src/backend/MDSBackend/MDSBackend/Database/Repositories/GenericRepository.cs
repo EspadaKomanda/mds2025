@@ -77,8 +77,10 @@ public class GenericRepository<TEntity> where TEntity : class
 
         Delete(entityToDelete);
     }
-
-    
+    public virtual void DeleteRange(IEnumerable<TEntity> entities)
+    {
+        dbSet.RemoveRange(entities);
+    }
     public virtual void Delete(TEntity entityToDelete)
     {
         if (context.Entry(entityToDelete).State == EntityState.Detached)

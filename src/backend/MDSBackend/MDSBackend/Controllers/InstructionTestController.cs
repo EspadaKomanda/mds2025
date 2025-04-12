@@ -1,8 +1,12 @@
 using AutoMapper;
+using MDSBackend.Exceptions.Services.Instruction;
 using MDSBackend.Exceptions.Services.InstructionTest;
+using MDSBackend.Models.BasicResponses;
+using MDSBackend.Models.Database;
 using MDSBackend.Models.DTO;
 using MDSBackend.Services.InstructionTests;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MDSBackend.Controllers;
@@ -13,12 +17,14 @@ namespace MDSBackend.Controllers;
 public class InstructionTestController : ControllerBase
 {
     private readonly IInstructionTestsService _instructionTestsService;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<InstructionTestController> _logger;
     private readonly IMapper _mapper;
 
-    public InstructionTestController(IInstructionTestsService instructionTestsService, ILogger<InstructionTestController> logger, IMapper mapper)
+    public InstructionTestController(IInstructionTestsService instructionTestsService, UserManager<ApplicationUser> userManager, ILogger<InstructionTestController> logger, IMapper mapper)
     {
         _instructionTestsService = instructionTestsService;
+        _userManager = userManager;
         _logger = logger;
         _mapper = mapper;
     }
@@ -51,12 +57,11 @@ public class InstructionTestController : ControllerBase
     /// <param name="id">The ID of the instruction.</param>
     /// <returns>An <see cref="InstructionTestDTO"/> containing the instruction test DTO if found, or a 404 Not Found if not found.</returns>
     /// <response code="200">Returns the instruction test DTO</response>
-    /// <response code="404">If the instruction test is not found</response>
+    /// <response code="404">If the instruction is not found</response>
     [HttpGet("instruction/{id}")]
-    public IActionResult GetInstructionTestByInstructionId(long id)
+    public IActionResult GetInstructionTestsByInstructionId(long id)
     {
         // TODO: verify admin access / user ownership
-        // WARNING: The service method is not implemented at the time of writing this
         try
         {
             var instructionTest = _instructionTestsService.GetInstructionTestsByInstructionId(id);
@@ -64,7 +69,15 @@ public class InstructionTestController : ControllerBase
         }
         catch (InstructionTestNotFoundException)
         {
-            return NotFound();
+            return Ok(new List<InstructionTestDTO>());
+        }
+        catch (InstructionNotFoundException)
+        {
+            return NotFound(new BasicResponse()
+            {
+                Code = 404,
+                Message = "Instruction not found"
+            });
         }
     }
 
@@ -98,10 +111,12 @@ public class InstructionTestController : ControllerBase
     /// <response code="200">Returns the instruction test results</response>
     /// <response code="404">If the instruction test results are not found</response>
     [HttpGet("/{instructionTestId}/results")]
-    public IActionResult GetUserInstructionTestResultsByInstructionTestId(long instructionTestId)
+    public async Task<IActionResult> GetUserInstructionTestResultsByInstructionTestId(long instructionTestId)
     {
         // TODO: verify user ownership
-        long userId = long.Parse(User.Claims.First(c => c.Type == "id").Value);
+        string username = User.Claims.First(c => c.Type == "username").Value;
+        long userId = (await _userManager.FindByNameAsync(username))!.Id;
+
         try
         {
             var instructionTestResults = _instructionTestsService.GetUserInstructionTestResultsByInstructionTestId(userId, instructionTestId);
@@ -192,7 +207,7 @@ public class InstructionTestController : ControllerBase
     {
         try
         {
-            var instructionTest = await _instructionTestsService.CreateInstructionTestAsync(model);
+            var instructionTest = await _instructionTestsService.CreateInstructionTest(model);
             return Ok(instructionTest);
         }
         catch (Exception)
@@ -213,7 +228,7 @@ public class InstructionTestController : ControllerBase
     {
         try
         {
-            var instructionTest = await _instructionTestsService.UpdateInstructionTestAsync(model);
+            var instructionTest = await _instructionTestsService.UpdateInstructionTest(model);
             return Ok(instructionTest);
         }
         catch (Exception)
@@ -247,7 +262,9 @@ public class InstructionTestController : ControllerBase
     public async Task<IActionResult> SubmitInstructionTest([FromBody] InstructionTestSubmissionDTO model)
     {
         // TODO: verify user access
-        long userId = long.Parse(User.Claims.First(c => c.Type == "id").Value);
+        string username = User.Claims.First(c => c.Type == "username").Value;
+        long userId = (await _userManager.FindByNameAsync(username))!.Id;
+
         try
         {
             await _instructionTestsService.SubmitInstructionTestAsync(userId, model);
