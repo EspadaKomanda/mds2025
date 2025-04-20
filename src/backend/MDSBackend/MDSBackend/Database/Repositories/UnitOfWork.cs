@@ -14,6 +14,12 @@ public class UnitOfWork : IDisposable
     private GenericRepository<RefreshToken> _refreshTokenRepository;
     private GenericRepository<RoleRight> _roleRightRepository;
     private GenericRepository<UserRole> _userRoleRepository;
+    private GenericRepository<Instruction> _instructionRepository;
+    private GenericRepository<InstructionParagraph> _instructionParagraphRepository;
+    private GenericRepository<InstructionCategory> _instructionCategoryRepository;
+    private GenericRepository<InstructionTest> _instructionTestRepository;
+    private GenericRepository<InstructionTestQuestion> _instructionTestQuestionRepository;
+    private GenericRepository<InstructionTestResult> _instructionTestResultRepository;
     
     #endregion
     
@@ -100,7 +106,77 @@ public class UnitOfWork : IDisposable
         }
     }
     
+    public GenericRepository<Instruction> InstructionRepository
+    {
+        get
+        {
+            if (this._instructionRepository == null)
+            {
+                this._instructionRepository = new GenericRepository<Instruction>(_context);              
+            }            
+            return _instructionRepository;
+        }
+    }
     
+    public GenericRepository<InstructionParagraph> InstructionParagraphRepository
+    {
+        get
+        {
+            if (this._instructionParagraphRepository == null)
+            {
+                this._instructionParagraphRepository = new GenericRepository<InstructionParagraph>(_context);              
+            }            
+            return _instructionParagraphRepository;
+        }
+    }
+
+    public GenericRepository<InstructionCategory> InstructionCategoryRepository
+    {
+        get
+        {
+            if (this._instructionCategoryRepository == null)
+            {
+                this._instructionCategoryRepository = new GenericRepository<InstructionCategory>(_context);              
+            }            
+            return _instructionCategoryRepository;
+        }
+    }
+
+    public GenericRepository<InstructionTest> InstructionTestRepository
+    {
+        get
+        {
+            if (this._instructionTestRepository == null)
+            {
+                this._instructionTestRepository = new GenericRepository<InstructionTest>(_context);              
+            }            
+            return _instructionTestRepository;
+        }
+    }
+
+    public GenericRepository<InstructionTestQuestion> InstructionTestQuestionRepository
+    {
+        get
+        {
+            if (this._instructionTestQuestionRepository == null)
+            {
+                this._instructionTestQuestionRepository = new GenericRepository<InstructionTestQuestion>(_context);              
+            }            
+            return _instructionTestQuestionRepository;
+        }
+    }
+
+    public GenericRepository<InstructionTestResult> InstructionTestResultRepository
+    {
+        get
+        {
+            if (this._instructionTestResultRepository == null)
+            {
+                this._instructionTestResultRepository = new GenericRepository<InstructionTestResult>(_context);              
+            }            
+            return _instructionTestResultRepository;
+        }
+    }
 
     #endregion
  

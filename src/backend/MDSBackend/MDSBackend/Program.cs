@@ -28,11 +28,6 @@ builder.Services.AddLogging();
 
 #endregion
 
-#region UtilServices
-
-builder.Services.AddUtilServices();
-
-#endregion
 
 #region SMTP
 
@@ -53,6 +48,11 @@ builder.Services.AddJwtAuth(builder.Configuration);
 
 #endregion
 
+#region UtilServices
+
+builder.Services.AddUtilServices();
+
+#endregion
 
 #region Services
 
@@ -61,12 +61,18 @@ builder.Services.AddBackendServices();
 #endregion
 
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+builder.Services.AddSwagger();
 
 var app = builder.Build();
 
 app.MapOpenApi();
 
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MDS2025 API V1");
+    c.RoutePrefix = string.Empty;
+});
 
 app.UseHttpsRedirection();
 

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using MDSBackend.Utils.Enums;
 
 namespace MDSBackend.Models.Database;
 
@@ -21,6 +22,9 @@ public class UserProfile
 
     [StringLength(50, ErrorMessage = "Patronymic must be less than 50 characters")]
     public string? Patronymic { get; set; }
+
+    [Required(ErrorMessage = "Gender is required")]
+    public Gender Gender { get; set; }
 
     [Required(ErrorMessage = "Birthdate is required")]
     public DateTime Birthdate { get; set; }
